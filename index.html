@@ -3,39 +3,104 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>En Fa PDM</title>
+<title>EN FA PDM - Todo Paso del Macho</title>
 <style>
-body{font-family:Arial,sans-serif;background:#FFF7ED;margin:0;padding:0;text-align:center}
-header{background:#EA580C;color:white;padding:25px 15px}
-header h1{margin:0;font-size:34px}
-header p{margin:5px 0 0}
-.buscador{padding:15px}
-.buscador input{width:90%;max-width:400px;padding:12px;border-radius:20px;border:1px solid #ddd;font-size:16px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;padding:15px}
-.card{background:white;border-radius:15px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
-.card span{font-size:35px}
-.card h3{margin:10px 0 5px}
-.card p{font-size:13px;color:#666;margin:0}
-.card button{background:#16A34A;color:white;border:none;padding:10px 15px;border-radius:10px;margin-top:10px;font-weight:bold}
-footer{padding:20px;color:#888;font-size:13px}
+*{box-sizing:border-box} body{font-family:Arial,sans-serif;background:#FFF7ED;margin:0;padding-bottom:80px}
+header{background:#EA580C;color:white;padding:18px 15px;text-align:center;position:sticky;top:0;z-index:20}
+header h1{margin:0;font-size:28px} header p{margin:4px 0 0;font-size:13px;opacity:.9}
+.search{padding:12px 15px} .search input{width:100%;padding:13px;border-radius:25px;border:1px solid #ddd;font-size:15px}
+h2{padding:0 15px;font-size:18px;margin:15px 0 10px}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 15px}
+.cat{background:white;border-radius:16px;padding:18px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer}
+.cat span{font-size:32px} .cat b{display:block;margin-top:6px;font-size:14px} .cat small{color:#666;font-size:11px}
+.back{margin:0 15px;background:#111;color:white;border:none;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer}
+.neg{background:white;margin:12px 15px;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.galeria{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}
+.galeria img{width:100%;min-width:100%;height:180px;object-fit:cover;scroll-snap-align:start}
+.info{padding:13px}
+.info h3{margin:0;font-size:18px} .info .meta{font-size:12px;color:#666;margin:4px 0}
+.menu{background:#FFF7ED;border-radius:10px;padding:10px;margin:8px 0}
+.menu b{font-size:13px} .menu div{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px dashed #ddd}
+.btns{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;border:none;padding:12px;border-radius:25px;font-weight:bold;font-size:14px;cursor:pointer}
+.btn-verde{background:#16A34A;color:white} .btn-naranja{background:#EA580C;color:white}
+.tag{display:inline-block;background:#FEF3C7;color:#92400E;font-size:11px;padding:3px 8px;border-radius:20px;font-weight:bold}
+.promo{background:#111;color:white;margin:15px;padding:18px;border-radius:16px;text-align:center}
+.promo button{background:#EA580C;color:white;border:none;padding:12px 20px;border-radius:20px;font-weight:bold;margin-top:8px}
+footer{text-align:center;color:#999;font-size:12px;padding:20px}
 </style>
 </head>
 <body>
-<header>
-<h1>🛵 EN FA PDM</h1>
-<p>Todo Paso del Macho, a tu puerta. En Fa.</p>
-</header>
-<div class="buscador">
-<input placeholder="¿Qué quieres hoy? Ej: tacos, carne, cheve...">
+<header><h1>🛵 EN FA PDM</h1><p>Todo Paso del Macho, a tu puerta. En Fa.</p></header>
+
+<div id="inicio">
+<div class="search"><input id="busqueda" onkeyup="buscarHome()" placeholder="🔍 ¿Qué quieres hoy? tacos, cheve, refacciones..."></div>
+<h2>Categorías</h2>
+<div class="cats">
+<div class="cat" onclick="abrirCat('comida')"><span>🍔</span><b>Restaurantes y Antojitos</b><small>4 negocios • Pedido directo</small></div>
+<div class="cat" onclick="abrirCat('licores')"><span>🍺</span><b>Licores y Cerveza</b><small>4 negocios • Pedido a EN FA</small></div>
+<div class="cat" onclick="abrirCat('abarrotes')"><span>🛒</span><b>Abarrotes Varios</b><small>4 negocios • Pedido a EN FA</small></div>
+<div class="cat" onclick="abrirCat('refaccionaria')"><span>🔧</span><b>Refaccionarias</b><small>2 negocios • Pedido a EN FA</small></div>
 </div>
-<div class="grid">
-<div class="card"><span>🍔</span><h3>Comida</h3><p>Tacos, tortas, pollos, antojitos</p><button>Pedir En Fa</button></div>
-<div class="card"><span>🥩</span><h3>Carnicerías</h3><p>Carne fresca, pollo, puerco</p><button>Pedir En Fa</button></div>
-<div class="card"><span>🍺</span><h3>Depósitos</h3><p>Cheve fría, refrescos, hielo</p><button>Pedir En Fa</button></div>
-<div class="card"><span>🔧</span><h3>Refaccionarias</h3><p>Piezas para moto y carro</p><button>Pedir En Fa</button></div>
+<h2>⭐ Recomendados hoy</h2>
+<div id="destacados"></div>
+<div class="promo"><h3 style="margin:0">¿Tienes negocio en Paso del Macho?</h3><p style="font-size:13px;opacity:.8">Aparece en la app + video en nuestro TikTok y Facebook</p><button onclick="registrar()">Quiero mi paquete 📲</button></div>
 </div>
-<p style="padding:0 20px">¿Eres negocio de Paso del Macho? Únete a En Fa y vende más.</p>
-<button style="background:#EA580C;color:white;border:none;padding:12px 20px;border-radius:20px;font-weight:bold">Quiero registrar mi negocio</button>
-<footer>EN FA PDM • Paso del Macho, Ver. • enfapdm@gmail.com</footer>
+
+<div id="categoria" style="display:none">
+<br><button class="back" onclick="volver()">← Volver</button>
+<h2 id="tituloCat"></h2>
+<div id="listaCat"></div>
+</div>
+
+<footer>EN FA PDM • Paso del Macho, Ver. • WhatsApp 273 124 5452<br>Hecho en Paso del Macho, para Paso del Macho.</footer>
+
+<script>
+const TEL = "522731245452";
+const negocios = [
+{id:1,cat:"comida",nombre:"Carnitas Vale",emoji:"🥩",desc:"Carnitas estilo Michoacán, bien doraditas",horario:"8am - 5pm • ⭐ 4.9",fotos:["https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600","https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600","https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600"],menu:[["Taco de carnitas","$30"],["Orden de carnitas 1/2 kg","$180"],["Torta de carnitas","$55"]],tipo:"directo"},
+{id:2,cat:"comida",nombre:"Las Galeras",emoji:"🦐",desc:"Mariscos y comida del mar",horario:"10am - 7pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1559742811-822873691df8?w=600","https://images.unsplash.com/photo-1611599537845-1c7aca0091c0?w=600","https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=600"],menu:[["Coctel de camarón","$120"],["Mojarra frita","$140"],["Ceviche","$110"]],tipo:"directo"},
+{id:3,cat:"comida",nombre:"Chucumites",emoji:"🌮",desc:"Antojitos y tacos de la región",horario:"5pm - 11pm • ⭐ 4.9",fotos:["https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=600","https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600","https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=600"],menu:[["Tacos de pastor","$25"],["Gringa","$45"],["Quesadilla","$35"]],tipo:"directo"},
+{id:4,cat:"comida",nombre:"Antojitos Paraíso",emoji:"🍔",desc:"Antojitos, tortas y hamburguesas",horario:"4pm - 11pm • ⭐ 4.7",fotos:["https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600","https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600","https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=600"],menu:[["Hamburguesa clásica","$70"],["Torta de jamón","$50"],["Papas a la francesa","$40"]],tipo:"directo"},
+
+{id:5,cat:"licores",nombre:"El Compayito",emoji:"🍺",desc:"Cheve fría, botana y hielo",horario:"10am - 11pm • ❄️ Bien fría",fotos:["https://images.unsplash.com/photo-1600788886242-5c96aabe3757?w=600","https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?w=600","https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=600"],menu:[["Six de cerveza","$120"],["Hielo 5kg","$40"],["Botana","$60"]],tipo:"enfa"},
+{id:6,cat:"licores",nombre:"Depósito Altamirano Iram",emoji:"🍻",desc:"Depósito con entrega en fa",horario:"9am - 11pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1600788886242-5c96aabe3757?w=600","https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600","https://images.unsplash.com/photo-1567696911980-2eed69a46042?w=600"],menu:[["Cartón de cerveza","$380"],["Refresco 3L","$45"],["Caguama","$65"]],tipo:"enfa"},
+{id:7,cat:"licores",nombre:"Depósito El Fuerte",emoji:"🥃",desc:"Licores, cerveza y refrescos",horario:"9am - 10pm • ⭐ 4.9",fotos:["https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=600","https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600","https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600"],menu:[["Botella 750ml","$280"],["Six Tecate","$130"],["Refrescos","$35"]],tipo:"enfa"},
+{id:8,cat:"licores",nombre:"7/24 y Oxxo",emoji:"🏪",desc:"Tienda 24 hrs, todo en fa",horario:"24 hrs • Abierto siempre",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Café + pan","$45"],["Recarga / Oxxo","$20"],["Snacks","$35"]],tipo:"enfa"},
+
+{id:9,cat:"abarrotes",nombre:"Super Sampieri",emoji:"🛒",desc:"Súper completo, todo para tu casa",horario:"7am - 9pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1542838132-92c53300491e?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Despensa básica","$350"],["Frutas y verduras","$120"],["Lácteos","$90"]],tipo:"enfa"},
+{id:10,cat:"abarrotes",nombre:"Super Vásquez",emoji:"🛍️",desc:"Abarrotes, frutas y carnes",horario:"7am - 9pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1542838132-92c53300491e?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Kilo de huevo","$52"],["Kilo de tortilla","$28"],["Aceite 1L","$48"]],tipo:"enfa"},
+{id:11,cat:"abarrotes",nombre:"Lores",emoji:"🏬",desc:"Todo para tu hogar a buen precio",horario:"8am - 9pm",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600","https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600"],menu:[["Detergente","$85"],["Papel higiénico","$65"],["Jabón","$35"]],tipo:"enfa"},
+{id:12,cat:"abarrotes",nombre:"Aurrerá",emoji:"🛒",desc:"Precios bajos, despensa completa",horario:"7am - 10pm",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1542838132-92c53300491e?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Despensa familiar","$500"],["Pollo entero","$120"],["Arroz 1kg","$32"]],tipo:"enfa"},
+
+{id:13,cat:"refaccionaria",nombre:"Refaccionaria del Centro",emoji:"🔧",desc:"Piezas para moto y carro",horario:"8am - 7pm • ⭐ 4.7",fotos:["https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=600","https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600","https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=600"],menu:[["Balatas moto","$180"],["Aceite 1L","$130"],["Bujía","$65"]],tipo:"enfa"},
+{id:14,cat:"refaccionaria",nombre:"Refaccionaria Osorio",emoji:"🛠️",desc:"Refacciones originales y genéricas",horario:"8am - 7pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600","https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=600","https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=600"],menu:[["Llanta moto","$650"],["Cadena","$320"],["Foco LED","$95"]],tipo:"enfa"},
+];
+
+function tarjeta(n){
+  let menuHtml = n.menu.map(m=>`<div><span>${m[0]}</span><b>${m[1]}</b></div>`).join("");
+  let btn = n.tipo==="directo"
+    ? `<button class="btn btn-verde" onclick="pedirDirecto('${n.nombre}')">Pedir directo al negocio 🟢</button>`
+    : `<button class="btn btn-naranja" onclick="pedirEnFa('${n.nombre}')">Pedir en EN FA PDM 🟠</button>`;
+  let tag = n.tipo==="directo" ? `<span class="tag">✅ VÍNCULO DIRECTO • Va al negocio</span>` : `<span class="tag">🛵 PEDIDO A EN FA PDM</span>`;
+  return `<div class="neg"><div class="galeria">${n.fotos.map(f=>`<img src="${f}">`).join("")}</div><div class="info"><h3>${n.emoji} ${n.nombre}</h3><p class="meta">${n.desc} • ${n.horario}</p>${tag}<div class="menu"><b>📋 MENÚ / LO QUE VENDE</b>${menuHtml}</div><p style="font-size:13px;margin:5px 0">📞 <b>273 124 5452</b> • Desliza fotos →</p><div class="btns">${btn}<button class="btn" style="background:#111;color:white" onclick="verMenu('${n.nombre}')">Ver menú</button></div></div></div>`;
+}
+function renderDestacados(){ document.getElementById('destacados').innerHTML = negocios.slice(0,3).map(tarjeta).join(""); }
+function abrirCat(cat){
+  let titulos={comida:"🍔 Restaurantes y Antojitos",licores:"🍺 Licores y Cerveza",abarrotes:"🛒 Abarrotes Varios",refaccionaria:"🔧 Refaccionarias"};
+  document.getElementById('inicio').style.display="none";
+  document.getElementById('categoria').style.display="block";
+  document.getElementById('tituloCat').innerText = titulos[cat];
+  document.getElementById('listaCat').innerHTML = negocios.filter(n=>n.cat===cat).map(tarjeta).join("");
+  window.scrollTo(0,0);
+}
+function volver(){ document.getElementById('categoria').style.display="none"; document.getElementById('inicio').style.display="block"; }
+function pedirDirecto(nombre){ let m=encodeURIComponent("Hola "+nombre+", vi tu menú en EN FA PDM y quiero pedir:"); window.open("https://wa.me/"+TEL+"?text="+m,"_blank"); }
+function pedirEnFa(nombre){ let m=encodeURIComponent("Hola EN FA PDM, quiero pedir en "+nombre+":"); window.open("https://wa.me/"+TEL+"?text="+m,"_blank"); }
+function registrar(){ window.open("https://wa.me/"+TEL+"?text="+encodeURIComponent("Hola, quiero mi paquete en EN FA PDM (App + TikTok + Facebook)"),"_blank"); }
+function verMenu(nombre){ pedirDirecto(nombre); }
+function buscarHome(){ let t=document.getElementById('busqueda').value.toLowerCase(); if(!t){ renderDestacados(); return; } document.getElementById('destacados').innerHTML = negocios.filter(n=>n.nombre.toLowerCase().includes(t)||n.desc.toLowerCase().includes(t)).map(tarjeta).join(""); }
+renderDestacados();
+</script>
 </body>
 </html>
