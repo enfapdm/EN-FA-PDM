@@ -74,19 +74,32 @@ footer{text-align:center;color:#999;font-size:12px;padding:20px}
 </div>
 
 <script>
-var mapa = L.map('mapa').setView([18.975, -96.712], 15);
+var mapa = L.map('mapa').setView([18.966, -96.729], 14);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapa);
 
 var fase1 = L.polygon([
-[18.984, -96.726],[18.985, -96.713],[18.978, -96.711],[18.973, -96.712],[18.967, -96.718],[18.968, -96.726]
+[18.950593, -96.749497],
+[18.947772, -96.746804],
+[18.965443, -96.735178],
+[18.973356, -96.731721],
+[18.957267, -96.717387],
+[18.954302, -96.721061],
+[18.959844, -96.726173],
+[18.961342, -96.734152]
 ], {color:'#16A34A', fillColor:'#16A34A', fillOpacity:0.45, weight:3}).addTo(mapa);
 
 var fase2 = L.polygon([
-[18.985, -96.713],[18.986, -96.701],[18.977, -96.699],[18.973, -96.704],[18.973, -96.712],[18.978, -96.711]
+[18.979314, -96.734984],
+[18.985065, -96.724596],
+[18.975687, -96.718792],
+[18.967607, -96.727043]
 ], {color:'#2563EB', fillColor:'#2563EB', fillOpacity:0.45, weight:3}).addTo(mapa);
 
 var fase3 = L.polygon([
-[18.973, -96.712],[18.973, -96.704],[18.968, -96.700],[18.962, -96.706],[18.967, -96.718]
+[18.967607, -96.727043],
+[18.961232, -96.719762],
+[18.980086, -96.708789],
+[18.982640, -96.714951]
 ], {color:'#DC2626', fillColor:'#DC2626', fillOpacity:0.45, weight:3}).addTo(mapa);
 
 fase1.bindPopup("<b>🟢 FASE 1</b><br>¡Ya entregamos aquí!");
@@ -95,9 +108,9 @@ fase3.bindPopup("<b>🔴 FASE 3</b><br>Próximamente - Zona Sur");
 
 function mostrarFase(cual){
   var txt = document.getElementById('infoFase');
-  if(cual=='f1'){ mapa.setView([18.975, -96.722], 14); txt.innerHTML="<b>🟢 FASE 1 - YA ENTREGAMOS AQUÍ</b><br>El Escape, Emiliano Zapata y Unidad Habitacional Salvador Esquer Apodaca.<br><br>Si estás en lo verde, ¡pide en Fa!"; }
-  if(cual=='f2'){ mapa.setView([18.980, -96.700], 14); txt.innerHTML="<b>🔵 FASE 2 - PRÓXIMAMENTE</b><br>Centro de Paso del Macho, Parque, Colonia Los Almendros.<br><br>¡Muy pronto llegamos a ti!"; }
-  if(cual=='f3'){ mapa.setView([18.965, -96.705], 14); txt.innerHTML="<b>🔴 FASE 3 - PRÓXIMAMENTE</b><br>Zona Sur de Paso del Macho.<br><br>Estamos creciendo para ti."; }
+  if(cual=='f1'){ mapa.setView([18.959, -96.733], 14); txt.innerHTML="<b>🟢 FASE 1 - YA ENTREGAMOS AQUÍ</b><br>El Escape, Emiliano Zapata y Unidad Habitacional Salvador Esquer Apodaca.<br><br>Si estás en lo verde, ¡pide en Fa!"; }
+  if(cual=='f2'){ mapa.setView([18.977, -96.726], 14); txt.innerHTML="<b>🔵 FASE 2 - PRÓXIMAMENTE</b><br>Centro de Paso del Macho.<br><br>¡Muy pronto llegamos a ti!"; }
+  if(cual=='f3'){ mapa.setView([18.972, -96.718], 14); txt.innerHTML="<b>🔴 FASE 3 - PRÓXIMAMENTE</b><br>Zona Sur de Paso del Macho.<br><br>Estamos creciendo para ti."; }
 }
 </script>
 <h2>⭐ Recomendados hoy</h2>
