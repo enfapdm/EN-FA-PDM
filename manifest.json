@@ -1,0 +1,16 @@
+{
+  "name": "EN FA PDM",
+  "short_name": "EN FA",
+  "description": "Todo Paso del Macho, a tu puerta. En Fa.",
+  "start_url": "/EN-FA-PDM/",
+  "display": "standalone",
+  "background_color": "#FFF7ED",
+  "theme_color": "#EA580C",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2972/2972185.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

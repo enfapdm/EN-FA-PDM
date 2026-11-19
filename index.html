@@ -104,5 +104,10 @@ function verMenu(nombre){ pedirDirecto(nombre); }
 function buscarHome(){ let t=document.getElementById('busqueda').value.toLowerCase(); if(!t){ renderDestacados(); return; } document.getElementById('destacados').innerHTML = negocios.filter(n=>n.nombre.toLowerCase().includes(t)||n.desc.toLowerCase().includes(t)).map(tarjeta).join(""); }
 renderDestacados();
 </script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
 </body>
 </html>
