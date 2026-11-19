@@ -1,22 +1,20 @@
 {
   "name": "EN FA PDM",
-  "short_name": "EN FA",
-  "description": "Todo Paso del Macho, a tu puerta. En Fa.",
-  "start_url": "/EN-FA-PDM/",
+  "short_name": "EN FA PDM",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#FFF7ED",
+  "background_color": "#FF7A00",
   "theme_color": "#EA580C",
-  ype": "image/png"
-  }"icons": [
-  {
-    "src": "icon.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  },
-  {
-    "src": "icon.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }
-]
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
