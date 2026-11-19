@@ -30,10 +30,21 @@ h2{padding:0 15px;font-size:18px;margin:15px 0 10px}
 .promo{background:#111;color:white;margin:15px;padding:18px;border-radius:16px;text-align:center}
 .promo button{background:#EA580C;color:white;border:none;padding:12px 20px;border-radius:20px;font-weight:bold;margin-top:8px}
 footer{text-align:center;color:#999;font-size:12px;padding:20px}
+.socials{display:flex;gap:8px;padding:12px 15px 0;justify-content:center;flex-wrap:wrap}
+.socials a{flex:1;min-width:70px;text-align:center;text-decoration:none;color:white;padding:11px 5px;border-radius:25px;font-weight:bold;font-size:13px}
+.s-fb{background:#1877F2} .s-ig{background:#E1306C} .s-tt{background:#111} .s-wa{background:#16A34A}
+.socials-footer{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.socials-footer a{text-decoration:none;color:white;padding:10px 14px;border-radius:20px;font-weight:bold;font-size:13px}
 </style>
 </head>
 <body>
 <header><h1>🛵 EN FA PDM</h1><p>Todo Paso del Macho, a tu puerta. En Fa.</p></header>
+<div class="socials">
+  <a class="s-fb" href="https://www.facebook.com/share/19mCAgozyb/" target="_blank">📘 Facebook</a>
+  <a class="s-ig" href="https://www.instagram.com/enfapdm" target="_blank">📸 Instagram</a>
+  <a class="s-tt" href="https://www.tiktok.com/@en.fa.pdm?_r=1&_t=ZS-9BXRQdIrKPU" target="_blank">🎵 TikTok</a>
+  <a class="s-wa" href="https://wa.me/522731245452?text=Hola%20EN%20FA%20PDM%2C%20quiero%20pedir" target="_blank">💬 WhatsApp</a>
+</div>
 <button id="btnInstalar" style="background:#EA580C; color:white; border:none; padding:15px 25px; font-size:18px; font-weight:bold; border-radius:12px; width:90%; margin:15px 5%; display:block;">
   ⬇️ Descargar App
 </button>
@@ -58,7 +69,14 @@ footer{text-align:center;color:#999;font-size:12px;padding:20px}
 <div id="listaCat"></div>
 </div>
 
-<footer>EN FA PDM • Paso del Macho, Ver. • WhatsApp 273 124 5452<br>Hecho en Paso del Macho, para Paso del Macho.</footer>
+<footer>EN FA PDM • Paso del Macho, Ver. • WhatsApp 273 124 5452<br>Hecho en Paso del Macho, para Paso del Macho.
+<div class="socials-footer">
+  <a class="s-fb" href="https://www.facebook.com/share/19mCAgozyb/" target="_blank">📘 Facebook</a>
+  <a class="s-ig" href="https://www.instagram.com/enfapdm" target="_blank">📸 Instagram</a>
+  <a class="s-tt" href="https://www.tiktok.com/@en.fa.pdm?_r=1&_t=ZS-9BXRQdIrKPU" target="_blank">🎵 TikTok</a>
+  <a class="s-wa" href="https://wa.me/522731245452" target="_blank">💬 WhatsApp Business</a>
+</div>
+</footer>
 
 <script>
 const TEL = "522731245452";
@@ -67,21 +85,17 @@ const negocios = [
 {id:2,cat:"comida",nombre:"Las Galeras",emoji:"🦐",desc:"Mariscos y comida del mar",horario:"10am - 7pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1559742811-822873691df8?w=600","https://images.unsplash.com/photo-1611599537845-1c7aca0091c0?w=600","https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=600"],menu:[["Coctel de camarón","$120"],["Mojarra frita","$140"],["Ceviche","$110"]],tipo:"directo"},
 {id:3,cat:"comida",nombre:"Chucumites",emoji:"🌮",desc:"Antojitos y tacos de la región",horario:"5pm - 11pm • ⭐ 4.9",fotos:["https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=600","https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600","https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=600"],menu:[["Tacos de pastor","$25"],["Gringa","$45"],["Quesadilla","$35"]],tipo:"directo"},
 {id:4,cat:"comida",nombre:"Antojitos Paraíso",emoji:"🍔",desc:"Antojitos, tortas y hamburguesas",horario:"4pm - 11pm • ⭐ 4.7",fotos:["https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600","https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600","https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=600"],menu:[["Hamburguesa clásica","$70"],["Torta de jamón","$50"],["Papas a la francesa","$40"]],tipo:"directo"},
-
 {id:5,cat:"licores",nombre:"El Compayito",emoji:"🍺",desc:"Cheve fría, botana y hielo",horario:"10am - 11pm • ❄️ Bien fría",fotos:["https://images.unsplash.com/photo-1600788886242-5c96aabe3757?w=600","https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?w=600","https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=600"],menu:[["Six de cerveza","$120"],["Hielo 5kg","$40"],["Botana","$60"]],tipo:"enfa"},
 {id:6,cat:"licores",nombre:"Depósito Altamirano Iram",emoji:"🍻",desc:"Depósito con entrega en fa",horario:"9am - 11pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1600788886242-5c96aabe3757?w=600","https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600","https://images.unsplash.com/photo-1567696911980-2eed69a46042?w=600"],menu:[["Cartón de cerveza","$380"],["Refresco 3L","$45"],["Caguama","$65"]],tipo:"enfa"},
 {id:7,cat:"licores",nombre:"Depósito El Fuerte",emoji:"🥃",desc:"Licores, cerveza y refrescos",horario:"9am - 10pm • ⭐ 4.9",fotos:["https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=600","https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600","https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600"],menu:[["Botella 750ml","$280"],["Six Tecate","$130"],["Refrescos","$35"]],tipo:"enfa"},
 {id:8,cat:"licores",nombre:"7/24 y Oxxo",emoji:"🏪",desc:"Tienda 24 hrs, todo en fa",horario:"24 hrs • Abierto siempre",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Café + pan","$45"],["Recarga / Oxxo","$20"],["Snacks","$35"]],tipo:"enfa"},
-
 {id:9,cat:"abarrotes",nombre:"Super Sampieri",emoji:"🛒",desc:"Súper completo, todo para tu casa",horario:"7am - 9pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1542838132-92c53300491e?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Despensa básica","$350"],["Frutas y verduras","$120"],["Lácteos","$90"]],tipo:"enfa"},
 {id:10,cat:"abarrotes",nombre:"Super Vásquez",emoji:"🛍️",desc:"Abarrotes, frutas y carnes",horario:"7am - 9pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1542838132-92c53300491e?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Kilo de huevo","$52"],["Kilo de tortilla","$28"],["Aceite 1L","$48"]],tipo:"enfa"},
 {id:11,cat:"abarrotes",nombre:"Lores",emoji:"🏬",desc:"Todo para tu hogar a buen precio",horario:"8am - 9pm",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600","https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600"],menu:[["Detergente","$85"],["Papel higiénico","$65"],["Jabón","$35"]],tipo:"enfa"},
 {id:12,cat:"abarrotes",nombre:"Aurrerá",emoji:"🛒",desc:"Precios bajos, despensa completa",horario:"7am - 10pm",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1542838132-92c53300491e?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Despensa familiar","$500"],["Pollo entero","$120"],["Arroz 1kg","$32"]],tipo:"enfa"},
-
 {id:13,cat:"refaccionaria",nombre:"Refaccionaria del Centro",emoji:"🔧",desc:"Piezas para moto y carro",horario:"8am - 7pm • ⭐ 4.7",fotos:["https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=600","https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600","https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=600"],menu:[["Balatas moto","$180"],["Aceite 1L","$130"],["Bujía","$65"]],tipo:"enfa"},
 {id:14,cat:"refaccionaria",nombre:"Refaccionaria Osorio",emoji:"🛠️",desc:"Refacciones originales y genéricas",horario:"8am - 7pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600","https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=600","https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=600"],menu:[["Llanta moto","$650"],["Cadena","$320"],["Foco LED","$95"]],tipo:"enfa"},
 ];
-
 function tarjeta(n){
   let menuHtml = n.menu.map(m=>`<div><span>${m[0]}</span><b>${m[1]}</b></div>`).join("");
   let btn = n.tipo==="directo"
@@ -108,7 +122,6 @@ function buscarHome(){ let t=document.getElementById('busqueda').value.toLowerCa
 renderDestacados();
 </script>
 <script>
-  <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
