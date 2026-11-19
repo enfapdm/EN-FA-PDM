@@ -34,6 +34,9 @@ footer{text-align:center;color:#999;font-size:12px;padding:20px}
 </head>
 <body>
 <header><h1>🛵 EN FA PDM</h1><p>Todo Paso del Macho, a tu puerta. En Fa.</p></header>
+<button id="btnInstalar" style="background:#EA580C; color:white; border:none; padding:15px 25px; font-size:18px; font-weight:bold; border-radius:12px; width:90%; margin:15px 5%; display:block;">
+  ⬇️ Descargar App
+</button>
 
 <div id="inicio">
 <div class="search"><input id="busqueda" onkeyup="buscarHome()" placeholder="🔍 ¿Qué quieres hoy? tacos, cheve, refacciones..."></div>
@@ -109,6 +112,22 @@ renderDestacados();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
+</script>
+<script>
+let appParaInstalar = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  appParaInstalar = e;
+});
+document.getElementById('btnInstalar').addEventListener('click', async () => {
+  if (appParaInstalar) {
+    appParaInstalar.prompt();
+    await appParaInstalar.userChoice;
+    appParaInstalar = null;
+  } else {
+    alert('En tu celular pícale a los 3 puntitos > Instalar app');
+  }
+});
 </script>
 </body>
 </html>
