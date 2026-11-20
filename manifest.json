@@ -1,15 +1,15 @@
 {
-  "id": "/EN-FA-PDM/",
+  "id": "/EN-FA-PDM/cliente/",
   "name": "EN FA PDM",
   "short_name": "EN FA PDM",
-  "start_url": "/EN-FA-PDM/",
-  "scope": "/EN-FA-PDM/",
+  "start_url": "/EN-FA-PDM/cliente/",
+  "scope": "/EN-FA-PDM/cliente/",
   "display": "standalone",
   "background_color": "#ff6a00",
   "theme_color": "#ff6a00",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "/EN-FA-PDM/icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
