@@ -1,15 +1,15 @@
 {
   "id": "/EN-FA-PDM/repartidor/",
-  "name": "EN-FA Repartidor",
-  "short_name": "EN-FA Repartidor",
+  "name": "Repartidor",
+  "short_name": "Repartidor",
   "start_url": "/EN-FA-PDM/repartidor/",
   "scope": "/EN-FA-PDM/repartidor/",
   "display": "standalone",
-  "background_color": "#0b5cff",
-  "theme_color": "#0b5cff",
+  "background_color": "#2FA65A",
+  "theme_color": "#2FA65A",
   "icons": [
     {
-      "src": "/EN-FA-PDM/logo.png",
+      "src": "/EN-FA-PDM/logo-repartidor.png",
       "sizes": "512x512",
       "type": "image/png"
     }
