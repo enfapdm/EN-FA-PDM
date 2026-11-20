@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repartidores Fa</title>
+<style>
+	body{font-family:Arial;background:#111;color:#fff;text-align:center;padding:20px}
+	.card{background:#1e1e1e;border-radius:15px;padding:20px;margin:15px 0}
+	h1{color:#25D366}
+	button{width:100%;padding:14px;font-size:17px;border:none;border-radius:12px;margin-top:8px;font-weight:bold;cursor:pointer}
+	.yoVoy{background:#ffcc00;color:#000}
+	.camino{background:#2196F3;color:#fff}
+	.entregado{background:#25D366;color:#fff}
+	.gris{background:#444;color:#fff}
+	.pedido{background:#2a2a2a;padding:15px;border-radius:12px;margin:10px 0;text-align:left}
+	input,select{width:100%;padding:14px;font-size:18px;border-radius:10px;border:none;margin-top:10px;text-align:center}
+</style>
+</head>
+<body>
+<h1>🛵 Repartidores Fa</h1>
+<p>Paso del Macho</p>
+<div class="card" id="login">
+	<h2>🔐 Entrar</h2>
+	<select id="numRepa">
+		<option value="1">Repartidor 1</option>
+		<option value="2">Repartidor 2</option>
+		<option value="3">Repartidor 3</option>
+		<option value="4">Repartidor 4</option>
+		<option value="5">Repartidor 5</option>
+		<option value="6">Repartidor 6</option>
+		<option value="7">Repartidor 7</option>
+		<option value="8">Repartidor 8</option>
+		<option value="9">Repartidor 9</option>
+		<option value="10">Repartidor 10</option>
+	</select>
+	<input type="password" id="pass" placeholder="Contraseña">
+	<button style="background:#25D366;color:#fff" onclick="entrar()">ENTRAR</button>
+	<p id="error" style="color:#ff3b30"></p>
+</div>
+<div class="card" id="panel" style="display:none">
+	<h2>Hola Repartidor #<span id="muestraNum"></span> 👋</h2>
+	<p id="estadoRepa">Esperando pedidos...</p>
+	<div class="pedido" id="pedido1">
+		<b>🔴 PEDIDO #001 - LISTO PARA RECOGER</b><br><br>
+		🍖 <b>De:</b> Carnitas Vale<br>
+		📍 <b>Recoger en:</b> Carnitas Vale<br>
+		🏠 <b>Llevar a:</b> Calle Zapata #12<br>
+		💰 <b>Total:</b> $120 - Efectivo<br>
+		<p id="quienLoTiene" style="color:#ffcc00;font-weight:bold"></p>
+		<button class="yoVoy" id="btnYoVoy" onclick="yoVoy()">🛵 ¡YO VOY POR ÉL!</button>
+		<button class="camino" id="btnCamino" style="display:none" onclick="enCamino()">🚀 YA ESTOY EN CAMINO</button>
+		<button class="entregado" id="btnEntregado" style="display:none" onclick="entregado()">✅ YA ENTREGADO</button>
+		<p id="msg"></p>
+	</div>
+	<button class="gris" onclick="location.reload()">🚪 Salir</button>
+</div>
+<script>
+const PASSWORDS = {
+	"1": "enfapdm123#9",
+	"2": "enfapdm123#8",
+	"3": "enfapdm123#5",
+	"4": "enfapdm123#7",
+	"5": "enfapdm123#4",
+	"6": "enfapdm123#0",
+	"7": "enfapdm123#2",
+	"8": "enfapdm123#6",
+	"9": "enfapdm123#10",
+	"10": "enfapdm123#1"
+};
+let miNumero = 0;
+function entrar(){
+	let num = document.getElementById('numRepa').value;
+	let pass = document.getElementById('pass').value;
+	if(pass === PASSWORDS[num]){
+		miNumero = num;
+		document.getElementById('login').style.display = "none";
+		document.getElementById('panel').style.display = "block";
+		document.getElementById('muestraNum').innerText = num;
+	} else {
+		document.getElementById('error').innerText = "❌ Contraseña incorrecta";
+	}
+}
+function yoVoy(){
+	document.getElementById('quienLoTiene').innerText = "✅ Lo agarró Repartidor " + miNumero;
+	document.getElementById('msg').innerText = "¡Es tuyo! Ve a Carnitas Vale.";
+	document.getElementById('btnYoVoy').style.display = "none";
+	document.getElementById('btnCamino').style.display = "block";
+	localStorage.setItem("pedido_001_quien", "Repartidor " + miNumero);
+	localStorage.setItem("pedido_001_estado", "AGARRADO");
+	alert("¡Pedido tuyo Repartidor " + miNumero + "!");
+}
+function enCamino(){
+	document.getElementById('msg').innerText = "🚀 Vas en camino a Calle Zapata #12";
+	document.getElementById('btnCamino').style.display = "none";
+	document.getElementById('btnEntregado').style.display = "block";
+	localStorage.setItem("pedido_001_estado", "EN_CAMINO");
+	alert("¡En camino!");
+}
+function entregado(){
+	document.getElementById('msg').innerText = "✅ ¡Entregado! Buen trabajo Repartidor " + miNumero;
+	document.getElementById('pedido1').style.opacity = "0.5";
+	document.getElementById('btnEntregado').style.display = "none";
+	document.getElementById('estadoRepa').innerText = "✅ Pedido #001 Entregado - Esperando siguiente...";
+	localStorage.setItem("pedido_001_estado", "ENTREGADO");
+	alert("✅ ¡Entregado!");
+}
+setInterval(()=>{
+	let quien = localStorage.getItem("pedido_001_quien");
+	if(quien && quien !== "Repartidor " + miNumero && miNumero !== 0){
+		document.getElementById('quienLoTiene').innerText = "⚠️ Ya lo agarró " + quien;
+		document.getElementById('btnYoVoy').style.display = "none";
+		document.getElementById('msg').innerText = "Espera el siguiente pedido...";
+	}
+}, 1000);
+</script>
+</body>
+</html>
