@@ -21,6 +21,7 @@ button{width:100%;padding:14px;font-size:17px;border:none;border-radius:12px;mar
 .gris{background:#444;color:#fff}
 .pedido{background:#2a2a2a;padding:15px;border-radius:12px;margin:10px 0;text-align:left;border:2px solid #333}
 .pedido.nuevo{border-color:#25D366;animation:parpadeo 1s infinite}
+.pedido.listo{border-color:#ffcc00;animation:parpadeo 1s infinite}
 @keyframes parpadeo{50%{border-color:#ffcc00}}
 input,select{width:100%;padding:14px;font-size:18px;border-radius:10px;border:none;margin-top:10px;text-align:center}
 </style>
@@ -50,6 +51,7 @@ input,select{width:100%;padding:14px;font-size:18px;border-radius:10px;border:no
 <div class="card" id="panel" style="display:none">
 <h2>Hola Repartidor #<span id="muestraNum"></span> 👋</h2>
 <p id="estadoRepa">Esperando pedidos en vivo...</p>
+<button style="background:#ffcc00;color:#000" onclick="activarSonido()">🔔 ACTIVAR SONIDO DE PEDIDOS - Pícale aquí al entrar</button>
 <div id="listaPedidos"></div>
 <button class="gris" onclick="location.reload()">🚪 Salir</button>
 </div>
@@ -64,6 +66,10 @@ const passwords = {
 };
 let miNum = "";
 let misPedidos = {};
+let gpsActivo = null;
+let sonidoActivo = false;
+let idsYaAvisados = {};
+let audioCtx = null;
 
 document.getElementById('conexion').innerText = "✅ Conectado en vivo";
 
@@ -81,6 +87,29 @@ function entrar(){
   }
 }
 
+// SONIDO - EL CEL TIENE QUE TENER EL SONIDO ACTIVADO Y HABERLE PICADO AL BOTON DE ARRIBA UNA VEZ
+function activarSonido(){
+  sonidoActivo = true;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(navigator.vibrate) navigator.vibrate(200);
+  alert("🔔 Sonido activado. Cuando caiga un pedido LISTO te va a sonar aunque estés en otra app, mientras no cierres esta app.");
+  sonar();
+}
+function sonar(){
+  if(!sonidoActivo || !audioCtx) return;
+  // Beep fuerte x3
+  for(let i=0;i<3;i++){
+    setTimeout(()=>{
+      let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
+      o.connect(g); g.connect(audioCtx.destination);
+      o.frequency.value = 880; o.type='square';
+      g.gain.value = 0.15;
+      o.start(); o.stop(audioCtx.currentTime + 0.25);
+    }, i*400);
+  }
+  if(navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
+}
+
 function escucharPedidos(){
   db.ref('pedidos').on('value', (snap)=>{
     let datos = snap.val() || {};
@@ -92,20 +121,38 @@ function escucharPedidos(){
     }
     keys.forEach(k=>{
       let ped = datos[k];
+      // NO MOSTRAR LOS YA ENTREGADOS DE OTROS, SOLO LOS ACTIVOS Y LOS TUYOS
+      if(ped.estado==="entregado" && ped.repa != miNum) return;
       let esMio = ped.repa == miNum;
       let esLibre = !ped.repa || ped.repa == "";
-      let clase = ped.estado === "nuevo" ? "pedido nuevo" : "pedido";
+      let clase = "pedido";
+      if(ped.estado==="listo") clase = "pedido listo";
+      if(ped.estado==="nuevo") clase = "pedido nuevo";
+
+      // AVISO CON SONIDO CUANDO UN PEDIDO SE PONE EN LISTO Y ESTA LIBRE
+      if(ped.estado==="listo" && esLibre && !idsYaAvisados[k]){
+        idsYaAvisados[k]=true;
+        sonar();
+        if(Notification && Notification.permission==="granted"){
+          new Notification("🛵 ¡PEDIDO LISTO EN FA!", {body: (ped.negocio||"")+" - "+(ped.cliente||"")+" - "+(ped.direccion||"")});
+        }
+      }
+      if(Notification && Notification.permission==="default") Notification.requestPermission();
+
       html += `<div class="${clase}">
         <b>🧾 Pedido ${k.slice(-4)}</b><br>
+        🏪 ${ped.negocio || ""}<br>
         👤 ${ped.cliente || "Cliente"}<br>
         📍 ${ped.direccion || ""}<br>
         💰 $${ped.total || 0} - 📦 ${ped.productos || ""}<br>
         Estado: <b>${ped.estado || "nuevo"}</b> ${esMio ? " - ES TUYO ✅" : ""}<br>
-        ${esLibre && ped.estado==="nuevo" ? `<button class="yoVoy" onclick="tomarPedido('${k}')">🙋 YO VOY</button>` : ""}
+        ${esLibre && (ped.estado==="listo" || ped.estado==="nuevo") ? `<button class="yoVoy" onclick="tomarPedido('${k}')">🙋 YO VOY</button>` : ""}
         ${esMio && ped.estado==="voy" ? `<button class="camino" onclick="cambiarEstado('${k}','camino')">🚀 YA VOY EN CAMINO</button>` : ""}
         ${esMio && ped.estado==="camino" ? `<button class="entregado" onclick="cambiarEstado('${k}','entregado')">✅ ENTREGADO</button>` : ""}
+        ${esMio && ped.estado==="entregado" ? `<p style="color:#25D366">✅ Entregado, ya le llegó al cliente</p>` : ""}
       </div>`;
     });
+    if(html==="") html="<p>Sin pedidos listos ahorita... esperando 🕐<br><small>Cuando el negocio ponga LISTO, aquí te aparece.</small></p>";
     document.getElementById('listaPedidos').innerHTML = html;
     if(keys.length>0) document.getElementById('estadoRepa').innerText = "Tienes pedidos en vivo 🔴";
   });
@@ -113,12 +160,32 @@ function escucharPedidos(){
 
 function tomarPedido(id){
   db.ref('pedidos/'+id).update({repa: miNum, estado: "voy"});
+  iniciarGPS(id);
 }
 function cambiarEstado(id, nuevo){
   db.ref('pedidos/'+id).update({estado: nuevo});
-  if(nuevo==="entregado"){
-    setTimeout(()=>{ db.ref('pedidos/'+id).remove(); }, 5000);
+  if(nuevo==="voy" || nuevo==="camino"){
+    iniciarGPS(id);
   }
+  if(nuevo==="entregado"){
+    detenerGPS();
+    // YA NO LO BORRAMOS A LOS 5 SEGUNDOS, PARA QUE EL CLIENTE SI VEA EL "ENTREGADO"
+    // Se queda guardado, el cliente lo ve y el negocio también
+  }
+}
+function iniciarGPS(idPedido){
+  if(!navigator.geolocation) return;
+  if(gpsActivo) navigator.geolocation.clearWatch(gpsActivo);
+  gpsActivo = navigator.geolocation.watchPosition((pos)=>{
+    db.ref('pedidos/'+idPedido).update({
+      repaLat: pos.coords.latitude,
+      repaLng: pos.coords.longitude
+    });
+  }, ()=>{}, {enableHighAccuracy:true});
+}
+function detenerGPS(){
+  if(gpsActivo) navigator.geolocation.clearWatch(gpsActivo);
+  gpsActivo = null;
 }
 </script>
 </body>
