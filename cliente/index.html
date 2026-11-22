@@ -87,11 +87,22 @@ input[type=text],input[type=tel]{width:100%;padding:13px;border:1px solid #ddd;b
 var mapa = L.map('mapa').setView([18.965, -96.725], 13.5);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapa);
 // CONTORNO COMPLETO DE PASO DEL MACHO - CP 94970
+// CONTORNO 94970 IGUAL QUE EN GOOGLE MAPS - PUNTEADO, CASI TRANSPARENTE
 var coberturaTotal = L.polygon([
-[18.987, -96.745],[18.990, -96.730],[18.987, -96.715],[18.982, -96.705],[18.975, -96.698],
-[18.965, -96.695],[18.955, -96.700],[18.948, -96.710],[18.944, -96.722],[18.945, -96.735],
-[18.950, -96.748],[18.960, -96.755],[18.972, -96.756],[18.982, -96.752]
-], {color:'#EA580C', fillColor:'#EA580C', fillOpacity:0.35, weight:4}).addTo(mapa);
+[18.9845, -96.7440],[18.9855, -96.7350],[18.9870, -96.7250],[18.9830, -96.7170],
+[18.9770, -96.7120],[18.9710, -96.7100],[18.9670, -96.7080],[18.9630, -96.7060],
+[18.9600, -96.7000],[18.9580, -96.6950],[18.9540, -96.6950],[18.9490, -96.7000],
+[18.9460, -96.7100],[18.9450, -96.7220],[18.9480, -96.7350],[18.9500, -96.7480],
+[18.9550, -96.7580],[18.9620, -96.7620],[18.9700, -96.7620],[18.9780, -96.7570],
+[18.9820, -96.7500]
+], {
+  color:'#B94A48',      // cafecito rojizo como en Google Maps
+  weight:2,            // línea delgadita
+  dashArray:'4 6',     // PUNTEADO como en tu foto
+  fillColor:'#EA580C',
+  fillOpacity:0.08,    // CASI TRANSPARENTE, se ve el mapa abajo
+  opacity:0.9
+}).addTo(mapa);
 L.marker([18.971, -96.715]).addTo(mapa).bindPopup("<b>📍 Paso del Macho, Ver.</b><br>CP 94970<br>EN FA PDM entrega en todo el pueblo");
 mapa.fitBounds(coberturaTotal.getBounds());
 </script>
