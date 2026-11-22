@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EN FA PDM - Negocio</title>
+<link rel="manifest" href="manifest-negocio.json">
+<link rel="icon" href="logo.png">
+<meta name="theme-color" content="#EA580C">
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <style>
@@ -18,12 +21,21 @@ button{border:none;padding:14px;border-radius:25px;font-weight:bold;font-size:15
 .btn-rojo{background:#DC2626;color:white}
 .btn-gris{background:#eee}
 .btn-azul{background:#2563EB;color:white}
+.btn-amarillo{background:#ffcc00;color:#000}
+.btn-morado{background:#7C3AED;color:white}
 .pedido{border:2px solid #F97316;background:#FFFBEB;border-radius:16px;padding:14px;margin-top:12px}
+.pedido.nuevo{border-color:#DC2626;animation:parpadeo 1s infinite}
 .pedido.listo{border-color:#16A34A;background:#F0FDF4}
+@keyframes parpadeo{50%{border-color:#ffcc00}}
 .pedido b{font-size:17px}
 .motivo{margin-top:8px;display:none}
 small{color:#666}
 #panel{display:none}
+.tabs{display:flex;gap:8px;margin-top:15px}
+.tabs button{flex:1;padding:12px;border-radius:16px}
+.tabs button.activo{background:#EA580C;color:white}
+.resumen{background:#111;color:#fff;border-radius:16px;padding:14px;margin-top:12px;text-align:center}
+.resumen b{font-size:20px}
 </style>
 </head>
 <body>
@@ -51,7 +63,6 @@ small{color:#666}
 <input id="pass" type="password" placeholder="Contraseña">
 <button class="btn-naranja" onclick="entrar()">Entrar ➡️</button>
 <p id="error" style="color:red;text-align:center"></p>
-<p style="font-size:12px;color:#999;text-align:center">Prueba: Carnitas Vale / neg1<br>Las Galeras / neg2, Chucumites / neg3...</p>
 </div>
 
 <div id="panel">
@@ -59,10 +70,41 @@ small{color:#666}
 <b>Estás en: <span id="muestraNegocio"></span></b><br>
 <small id="conexion">Conectando...</small><br>
 <small id="estadoNegocio">🔴 Esperando pedidos...</small>
+<button id="btnInstalar" class="btn-morado" style="display:none" onclick="instalarApp()">📲 INSTALAR COMO APP - Pícale aquí para que suene como notificación</button>
+<button class="btn-amarillo" onclick="activarSonido()">🔔 ACTIVAR TONO - Pícale 1 vez al entrar</button>
+<p id="avisoSonido" style="font-size:12px;color:#666;text-align:center">Instálala como app y déjala abierta. Así sí suena aunque la pantalla esté apagada.</p>
 </div>
+
+<div class="tabs">
+<button id="tabVivo" class="activo" onclick="mostrarTab('vivo')">🔴 EN VIVO</button>
+<button id="tabHist" onclick="mostrarTab('historial')">📅 HISTORIAL</button>
+</div>
+
+<div id="vistaVivo">
+<div class="resumen">HOY: <b id="totalHoy">$0</b> en ventas | Comisión EN FA: <b id="comisionHoy">$0</b> | Pedidos: <b id="numHoy">0</b></div>
 <div id="listaPedidos"></div>
+</div>
+
+<div id="vistaHistorial" style="display:none">
+<div class="card">
+<b>📅 Historial</b><br>
+<small>Elige un día. Todo lo entregado se guarda aquí automáticamente, para que En Vivo quede limpio.</small>
+<input type="date" id="fechaHist">
+<button class="btn-azul" onclick="cargarHistorial()">Ver ese día</button>
+<div id="resumenHist" style="margin-top:10px"></div>
+<div id="listaHistorial"></div>
+<button class="btn-rojo" onclick="borrarMes()">🗑️ BORRAR TODO LO DE ESTE MES</button>
+<button class="btn-gris" onclick="borrarHistorialDia()">Borrar solo este día</button>
+</div>
+</div>
+
 <button class="btn-gris" onclick="location.reload()">🔄 Recargar</button>
 </div>
+
+<audio id="audioPedido" preload="auto" loop>
+<source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+<source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+</audio>
 
 <script>
 const firebaseConfig = { databaseURL: "https://en-fa-pdm-default-rtdb.firebaseio.com" };
@@ -76,9 +118,22 @@ const passwords = {
 "Refaccionaria del Centro":"neg13","Refaccionaria Osorio":"neg14"
 };
 let miNegocio = "";
-let misPedidos = {};
+let sonidoActivo = false;
+let audioCtx = null;
+let idsYaAvisados = {};
+let intervaloSonido = null;
+let deferredPrompt = null;
+
+// INSTALAR COMO APP
+window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; document.getElementById('btnInstalar').style.display='block'; });
+function instalarApp(){
+  if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; }); }
+  else { alert("En tu cel: pícale a los 3 puntitos de arriba a la derecha > Agregar a pantalla principal / Instalar app. Así queda como app y suena como notificación."); }
+}
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw-negocio.js').catch(()=>{}); }
 
 document.getElementById('conexion').innerText = "✅ Conectado en vivo";
+document.getElementById('fechaHist').value = new Date().toISOString().slice(0,10);
 
 function entrar(){
   let n = document.getElementById('negocioSelect').value;
@@ -88,60 +143,145 @@ function entrar(){
     document.getElementById('login').style.display='none';
     document.getElementById('panel').style.display='block';
     document.getElementById('muestraNegocio').innerText = n;
+    if("Notification" in window && Notification.permission==="default") Notification.requestPermission();
+    // Mantener la pantalla despierta mientras está abierta
+    if('wakeLock' in navigator){ navigator.wakeLock.request('screen').catch(()=>{}); }
     escucharPedidos();
-  } else {
-    document.getElementById('error').innerText = "❌ Contraseña incorrecta";
+  } else { document.getElementById('error').innerText = "❌ Contraseña incorrecta"; }
+}
+
+function mostrarTab(t){
+  document.getElementById('vistaVivo').style.display = t==='vivo' ? 'block' : 'none';
+  document.getElementById('vistaHistorial').style.display = t==='historial' ? 'block' : 'none';
+  document.getElementById('tabVivo').className = t==='vivo' ? 'activo' : '';
+  document.getElementById('tabHist').className = t==='historial' ? 'activo' : '';
+  if(t==='historial') cargarHistorial();
+}
+
+function hoyStr(){ return new Date().toISOString().slice(0,10); }
+
+function activarSonido(){
+  sonidoActivo = true;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if("Notification" in window) Notification.requestPermission();
+  if(navigator.vibrate) navigator.vibrate(200);
+  let a = document.getElementById('audioPedido'); a.play().then(()=>{ a.pause(); a.currentTime=0; }).catch(()=>{});
+  document.getElementById('avisoSonido').innerText = "✅ Tono activado. Instalada como app sí suena aunque la pantalla esté apagada.";
+  sonarUnaVez();
+  alert("🔔 Tono activado. Ahora INSTÁLALA como app con el botón morado para que suene como notificación de verdad.");
+}
+function sonarUnaVez(){
+  if(!sonidoActivo) return;
+  // 1. Audio real - suena como alarma
+  let a = document.getElementById('audioPedido');
+  a.currentTime = 0; a.play().catch(()=>{});
+  setTimeout(()=>{ a.pause(); }, 2500);
+  // 2. Beep por código
+  if(audioCtx){
+    for(let i=0;i<3;i++){ setTimeout(()=>{ let o=audioCtx.createOscillator(); let g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value=880; o.type='square'; g.gain.value=0.25; o.start(); o.stop(audioCtx.currentTime+0.3); }, i*450); }
+  }
+  if(navigator.vibrate) navigator.vibrate([400,150,400,150,400]);
+  // 3. Notificación de sistema
+  if("Notification" in window && Notification.permission==="granted"){
+    new Notification("🔔 ¡NUEVO PEDIDO EN FA! - "+miNegocio, {body:"Tienes un pedido nuevo, tómalo en Fa", tag:"pedido-nuevo", requireInteraction:true});
   }
 }
+function empezarAlarma(){ if(intervaloSonido) return; intervaloSonido = setInterval(()=>{ sonarUnaVez(); }, 5000); }
+function pararAlarma(){ if(intervaloSonido){ clearInterval(intervaloSonido); intervaloSonido=null; } let a=document.getElementById('audioPedido'); a.pause(); }
 
 function escucharPedidos(){
   db.ref('pedidos').on('value', (snap)=>{
     let datos = snap.val() || {};
-    misPedidos = datos;
-    let html = "";
     let keys = Object.keys(datos).reverse();
-    let mios = keys.filter(k => datos[k].negocio === miNegocio);
-    if(mios.length === 0){
-      html = "<p style='text-align:center'>Sin pedidos todavía... esperando 🕐</p>";
-    }
+    let mios = keys.filter(k => datos[k].negocio === miNegocio && datos[k].estado!=="entregado" && datos[k].estado!=="rechazado");
+    let hayNuevo = mios.some(k => datos[k].estado==="nuevo");
+    if(hayNuevo){ empezarAlarma(); document.getElementById('estadoNegocio').innerText = "🔴 ¡TIENES PEDIDO NUEVO!"; }
+    else { pararAlarma(); document.getElementById('estadoNegocio').innerText = "Tienes pedidos en vivo 🔴"; }
+
+    // Resumen de HOY desde historial + en vivo
+    db.ref('historial/'+encodeURIComponent(miNegocio)+'/'+hoyStr()).once('value', (s2)=>{
+      let hist = s2.val() || {};
+      let total=0, com=0, num=0;
+      Object.values(hist).forEach(p=>{ total+=Number(p.total||0); com+=Number(p.comision||0); num++; });
+      // Sumar los de hoy en vivo que aún no se archivan
+      mios.forEach(k=>{ if(datos[k].fecha===hoyStr() || !datos[k].fecha){ total+=Number(datos[k].total||0); com+=Number(datos[k].comision||0); num++; } });
+      document.getElementById('totalHoy').innerText = "$"+total;
+      document.getElementById('comisionHoy').innerText = "$"+com;
+      document.getElementById('numHoy').innerText = num;
+    });
+
+    let html = "";
+    if(mios.length===0) html = "<p style='text-align:center'>Sin pedidos en vivo... esperando 🕐<br><small>Lo entregado ya se guardó en HISTORIAL, por eso aquí queda limpio.</small></p>";
     mios.forEach(k=>{
       let ped = datos[k];
-      let clase = ped.estado === "listo" ? "pedido listo" : "pedido";
+      if(ped.estado==="nuevo" && !idsYaAvisados[k]){ idsYaAvisados[k]=true; sonarUnaVez(); }
+      let clase = ped.estado==="listo" ? "pedido listo" : ped.estado==="nuevo" ? "pedido nuevo" : "pedido";
       html += `<div class="${clase}">
         <b>🧾 Pedido ${k.slice(-4)}</b> - ${ped.estado || "nuevo"}<br>
-        👤 ${ped.cliente || ""}<br>
-        📍 ${ped.direccion || ""}<br>
-        📦 ${ped.productos || ""}<br>
-        💰 Subtotal: $${ped.subtotal || 0} | Comisión EN FA: $${ped.comision || 20} | <b>TOTAL: $${ped.total || 0}</b><br>
-        ${ped.estado==="rechazado" ? `<br>❌ Rechazado: ${ped.motivo}` : ""}
-        ${ped.estado==="nuevo" ? `
-          <button class="btn-verde" onclick="tomarPedido('${k}')">✅ TOMAR PEDIDO</button>
-          <button class="btn-rojo" onclick="mostrarRechazo('${k}')">❌ RECHAZAR</button>
-          <div id="rechazo-${k}" class="motivo"><textarea id="motivo-${k}" placeholder="Ej: Ya no tenemos Producto 2..."></textarea><button class="btn-rojo" onclick="rechazarPedido('${k}')">Enviar motivo y rechazar</button></div>
-        ` : ""}
-        ${ped.estado==="preparando" ? `<button class="btn-azul" onclick="cambiarEstado('${k}','listo')">🍽️ YA ESTÁ LISTO PARA RECOGER</button>` : ""}
+        👤 ${ped.cliente || ""}<br>📍 ${ped.direccion || ""}<br>📞 ${ped.telefono || ""}<br>📦 ${ped.productos || ""}<br>
+        💰 Subtotal: $${ped.subtotal || 0} | Comisión: $${ped.comision || 20} | <b>TOTAL: $${ped.total || 0}</b><br>
+        ${ped.estado==="nuevo" ? `<button class="btn-verde" onclick="tomarPedido('${k}')">✅ TOMAR PEDIDO</button><button class="btn-rojo" onclick="mostrarRechazo('${k}')">❌ RECHAZAR</button><div id="rechazo-${k}" class="motivo"><textarea id="motivo-${k}" placeholder="Ej: Ya no tenemos..."></textarea><button class="btn-rojo" onclick="rechazarPedido('${k}')">Enviar motivo y rechazar</button></div>` : ""}
+        ${ped.estado==="tomado" || ped.estado==="preparando" ? `<button class="btn-azul" onclick="cambiarEstado('${k}','listo')">🍽️ YA ESTÁ LISTO PARA RECOGER</button>` : ""}
         ${ped.estado==="listo" ? `<p>✅ Ya avisaste que está listo. Esperando repartidor...</p>` : ""}
         ${ped.estado==="voy" || ped.estado==="camino" ? `<p>🛵 Repartidor en camino</p>` : ""}
-        ${ped.estado==="entregado" ? `<p>✅ Entregado</p>` : ""}
       </div>`;
     });
     document.getElementById('listaPedidos').innerHTML = html;
-    if(mios.length>0) document.getElementById('estadoNegocio').innerText = "Tienes pedidos en vivo 🔴";
+  });
+  // Cuando un pedido se entrega, lo guardamos en historial y lo quitamos de En Vivo
+  db.ref('pedidos').on('child_changed', (snap)=>{
+    let ped = snap.val(); let id = snap.key;
+    if(ped && ped.negocio===miNegocio && (ped.estado==="entregado" || ped.estado==="rechazado")){
+      let fecha = ped.fecha || hoyStr();
+      db.ref('historial/'+encodeURIComponent(ped.negocio)+'/'+fecha+'/'+id).set(ped);
+      setTimeout(()=>{ db.ref('pedidos/'+id).remove(); }, 8000);
+    }
   });
 }
 
-function tomarPedido(id){
-  db.ref('pedidos/'+id).update({estado: "preparando"});
+function tomarPedido(id){ db.ref('pedidos/'+id).update({estado:"tomado", fecha: hoyStr()}); }
+function mostrarRechazo(id){ document.getElementById('rechazo-'+id).style.display='block'; }
+function rechazarPedido(id){ let motivo=document.getElementById('motivo-'+id).value || "Sin motivo"; db.ref('pedidos/'+id).update({estado:"rechazado", motivo:motivo, fecha: hoyStr()}); }
+function cambiarEstado(id, nuevo){ db.ref('pedidos/'+id).update({estado:nuevo}); }
+
+function cargarHistorial(){
+  let fecha = document.getElementById('fechaHist').value;
+  if(!fecha) return;
+  db.ref('historial/'+encodeURIComponent(miNegocio)+'/'+fecha).once('value', (snap)=>{
+    let datos = snap.val() || {};
+    let keys = Object.keys(datos).reverse();
+    let total=0, com=0;
+    keys.forEach(k=>{ total+=Number(datos[k].total||0); com+=Number(datos[k].comision||0); });
+    document.getElementById('resumenHist').innerHTML = `<div class="resumen">Día ${fecha}: <b>${keys.length}</b> pedidos | Ventas: <b>$${total}</b> | Comisión: <b>$${com}</b></div>`;
+    let html = "";
+    if(keys.length===0) html="<p style='text-align:center'>Sin pedidos ese día.</p>";
+    keys.forEach(k=>{
+      let p=datos[k];
+      html += `<div class="pedido"><b>🧾 ${k.slice(-4)}</b> - ${p.estado} - ${p.cliente||""}<br>📍 ${p.direccion||""}<br>📦 ${p.productos||""}<br>💰 <b>$${p.total||0}</b> | Comisión $${p.comision||0}</div>`;
+    });
+    document.getElementById('listaHistorial').innerHTML = html;
+  });
 }
-function mostrarRechazo(id){
-  document.getElementById('rechazo-'+id).style.display='block';
+function borrarHistorialDia(){
+  let fecha = document.getElementById('fechaHist').value;
+  if(confirm("¿Borrar el historial del día "+fecha+"? Ya no se puede recuperar.")){
+    db.ref('historial/'+encodeURIComponent(miNegocio)+'/'+fecha).remove();
+    cargarHistorial();
+  }
 }
-function rechazarPedido(id){
-  let motivo = document.getElementById('motivo-'+id).value || "Sin motivo";
-  db.ref('pedidos/'+id).update({estado: "rechazado", motivo: motivo});
-}
-function cambiarEstado(id, nuevo){
-  db.ref('pedidos/'+id).update({estado: nuevo});
+function borrarMes(){
+  let fecha = document.getElementById('fechaHist').value;
+  let mes = fecha.slice(0,7); // 2026-11
+  if(confirm("¿Borrar TODO el historial del mes "+mes+"? Esto borra todos los días de ese mes y ya no se puede recuperar.")){
+    db.ref('historial/'+encodeURIComponent(miNegocio)).once('value', (snap)=>{
+      let datos = snap.val() || {};
+      Object.keys(datos).forEach(dia=>{
+        if(dia.startsWith(mes)) db.ref('historial/'+encodeURIComponent(miNegocio)+'/'+dia).remove();
+      });
+      alert("✅ Historial del mes borrado. En Vivo queda limpio.");
+      cargarHistorial();
+    });
+  }
 }
 </script>
 </body>
