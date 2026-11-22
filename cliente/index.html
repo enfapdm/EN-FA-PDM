@@ -3,131 +3,231 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EN FA PDM - Cliente</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#EA580C">
+<title>EN FA PDM - Todo Paso del Macho</title>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-*{box-sizing:border-box} body{font-family:Arial,sans-serif;background:#FFF7ED;margin:0;padding:15px}
-header{background:#EA580C;color:white;padding:18px;text-align:center;border-radius:16px}
-.card{background:white;border-radius:16px;padding:16px;margin-top:15px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
-input,select{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;margin-top:8px;font-size:15px}
-button{border:none;padding:14px;border-radius:25px;font-weight:bold;font-size:15px;cursor:pointer;width:100%;margin-top:8px}
-.btn-naranja{background:#EA580C;color:white} .btn-verde{background:#16A34A;color:white} .btn-gris{background:#eee}
-.prod{display:flex;justify-content:space-between;align-items:center;background:#FFFBEB;border:1px solid #FDBA74;border-radius:12px;padding:10px;margin-top:8px}
-.prod button{width:32px;height:32px;padding:0;border-radius:50%;background:#EA580C;color:white;font-size:18px;margin:0}
-#mapa{height:220px;border-radius:14px;margin-top:10px;display:none}
-.progreso{display:flex;justify-content:space-between;margin:15px 0 5px;font-size:11px;text-align:center}
-.paso{flex:1;opacity:.35} .paso.activo{opacity:1;font-weight:bold;color:#EA580C}
-.barra{height:8px;background:#eee;border-radius:10px;overflow:hidden} #barraProgreso{height:100%;width:10%;background:#EA580C;transition:.5s}
-#verPedidoBtn{display:none;background:#111;color:white}
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:15px;z-index:999}
-#modal .card{width:100%;max-width:420px;max-height:90vh;overflow:auto}
+*{box-sizing:border-box} body{font-family:Arial,sans-serif;background:#FFF7ED;margin:0;padding-bottom:80px}
+header{background:#EA580C;color:white;padding:18px 15px;text-align:center;position:sticky;top:0;z-index:20}
+header h1{margin:0;font-size:28px} header p{margin:4px 0 0;font-size:13px;opacity:.9}
+.search{padding:12px 15px} .search input{width:100%;padding:13px;border-radius:25px;border:1px solid #ddd;font-size:15px}
+h2{padding:0 15px;font-size:18px;margin:15px 0 10px}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 15px}
+.cat{background:white;border-radius:16px;padding:18px 10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);cursor:pointer}
+.cat span{font-size:32px} .cat b{display:block;margin-top:6px;font-size:14px} .cat small{color:#666;font-size:11px}
+.back{margin:0 15px;background:#111;color:white;border:none;padding:10px 15px;border-radius:20px;font-weight:bold;cursor:pointer}
+.neg{background:white;margin:12px 15px;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.galeria{display:flex;overflow-x:auto;scroll-snap-type:x mandatory}
+.galeria img{width:100%;min-width:100%;height:180px;object-fit:cover;scroll-snap-align:start}
+.info{padding:13px} .info h3{margin:0;font-size:18px} .info .meta{font-size:12px;color:#666;margin:4px 0}
+.menu{background:#FFF7ED;border-radius:10px;padding:10px;margin:8px 0}
+.menu b{font-size:13px} .menu div{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px dashed #ddd}
+.btns{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;border:none;padding:12px;border-radius:25px;font-weight:bold;font-size:14px;cursor:pointer}
+.btn-verde{background:#16A34A;color:white} .btn-naranja{background:#EA580C;color:white} .btn-negro{background:#111;color:white}
+.tag{display:inline-block;background:#FEF3C7;color:#92400E;font-size:11px;padding:3px 8px;border-radius:20px;font-weight:bold}
+.promo{background:#111;color:white;margin:15px;padding:18px;border-radius:16px;text-align:center}
+.promo button{background:#EA580C;color:white;border:none;padding:12px 20px;border-radius:20px;font-weight:bold;margin-top:8px}
+footer{text-align:center;color:#999;font-size:12px;padding:20px}
+.socials{display:flex;gap:8px;padding:12px 15px 0;justify-content:center;flex-wrap:wrap}
+.socials a{flex:1;min-width:70px;text-align:center;text-decoration:none;color:white;padding:11px 5px;border-radius:25px;font-weight:bold;font-size:13px}
+.s-fb{background:#1877F2} .s-ig{background:#E1306C} .s-tt{background:#111} .s-wa{background:#16A34A}
+.socials-footer{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.socials-footer a{text-decoration:none;color:white;padding:10px 14px;border-radius:20px;font-weight:bold;font-size:13px}
+#modalComanda,#modalExito,#modalNegocio{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:15px;z-index:999;overflow:auto}
+.cardM{background:white;border-radius:16px;padding:16px;width:100%;max-width:460px;margin:20px 0}
+.fila{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed #ddd;font-size:14px}
+.fila input{width:70px;padding:9px;border:1px solid #ddd;border-radius:10px;text-align:center;font-size:15px}
+input[type=text],input[type=tel]{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;margin-top:8px;font-size:15px}
+.pedidoCard{background:white;border-radius:14px;padding:13px;margin:10px 0;box-shadow:0 2px 8px rgba(0,0,0,.1)}
 </style>
 </head>
 <body>
-<header><h1 style="margin:0">🛵 EN FA PDM</h1><p style="margin:5px 0 0;font-size:13px">Pide en Paso del Macho y síguelo en vivo.</p></header>
-
-<button id="verPedidoBtn" onclick="abrirSeguimiento()">🧾 VER MI PEDIDO EN VIVO</button>
-
-<div class="card">
-<b>1. ¿Qué negocio?</b>
-<select id="negocio">
-<option>Carnitas Vale</option><option>Las Galeras</option><option>Chucumites</option><option>Antojitos Paraíso</option><option>El Compayito</option><option>Depósito Altamirano Iram</option><option>Depósito El Fuerte</option><option>7/24 y Oxxo</option><option>Super Sampieri</option><option>Super Vásquez</option><option>Lores</option><option>Aurrerá</option><option>Refaccionaria del Centro</option><option>Refaccionaria Osorio</option>
-</select>
-<b style="display:block;margin-top:12px">2. ¿Qué quieres?</b>
-<div id="productos"></div>
-<b style="display:block;margin-top:12px">3. Tus datos</b>
-<input id="nombre" placeholder="Tu nombre">
-<input id="direccion" placeholder="Tu dirección / referencia (ej: frente al parque)">
-<input id="telefono" placeholder="Tu teléfono / WhatsApp">
-<div style="background:#FFFBEB;padding:12px;border-radius:12px;margin-top:10px">
-Subtotal: $<span id="sub">0</span><br>Comisión EN FA: $20<br><b>Total a pagar: $<span id="tot">20</span></b>
+<header><h1>🛵 EN FA PDM</h1><p>Todo Paso del Macho, a tu puerta. En Fa.</p></header>
+<div class="socials">
+  <a class="s-fb" href="https://www.facebook.com/share/19mCAgozyb/" target="_blank">📘 Facebook</a>
+  <a class="s-ig" href="https://www.instagram.com/enfapdm" target="_blank">📸 Instagram</a>
+  <a class="s-tt" href="https://www.tiktok.com/@en.fa.pdm?_r=1&_t=ZS-9BXRQdIrKPU" target="_blank">🎵 TikTok</a>
+  <a class="s-wa" href="https://wa.me/522731245452?text=Hola%20EN%20FA%20PDM%2C%20quiero%20pedir" target="_blank">💬 WhatsApp</a>
 </div>
-<button class="btn-naranja" onclick="pedir()">Pedir ahora 🛵</button>
-</div>
+<button id="btnInstalar" style="background:#EA580C;color:white;border:none;padding:15px 25px;font-size:18px;font-weight:bold;border-radius:12px;width:90%;margin:15px 5%;display:block;">⬇️ Descargar App</button>
+<div style="display:flex;gap:8px;padding:0 15px"><button onclick="abrirNegocio()" style="flex:1;background:#111;color:white;border:none;padding:12px;border-radius:20px;font-weight:bold">🏪 Soy Negocio - Ver pedidos</button><button onclick="verMiPedido()" style="flex:1;background:#16A34A;color:white;border:none;padding:12px;border-radius:20px;font-weight:bold">🧾 Ver mi pedido</button></div>
 
-<div id="modal"><div class="card">
-<h3 style="margin:0" id="tituloModal">Tu pedido</h3>
-<p id="textoEstado" style="color:#666"></p>
-<div class="progreso">
-<div class="paso" id="p1">🧾<br>Pedido</div>
-<div class="paso" id="p2">🍳<br>Preparando</div>
-<div class="paso" id="p3">🛵<br>En camino</div>
-<div class="paso" id="p4">✅<br>Entregado</div>
+<div id="inicio">
+<div class="search"><input id="busqueda" onkeyup="buscarHome()" placeholder="🔍 ¿Qué quieres hoy? tacos, cheve, refacciones..."></div>
+<h2>Categorías</h2>
+<div class="cats">
+<div class="cat" onclick="abrirCat('comida')"><span>🍔</span><b>Restaurantes y Antojitos</b><small>4 negocios</small></div>
+<div class="cat" onclick="abrirCat('licores')"><span>🍺</span><b>Licores y Cerveza</b><small>4 negocios</small></div>
+<div class="cat" onclick="abrirCat('abarrotes')"><span>🛒</span><b>Abarrotes Varios</b><small>4 negocios</small></div>
+<div class="cat" onclick="abrirCat('refaccionaria')"><span>🔧</span><b>Refaccionarias</b><small>2 negocios</small></div>
 </div>
-<div class="barra"><div id="barraProgreso"></div></div>
-<p id="tiempoLlegada" style="font-weight:bold;text-align:center"></p>
-<div id="mapa"></div>
-<p id="detallePedido" style="font-size:13px;color:#333"></p>
-<button class="btn-gris" onclick="cerrarModal()">Cerrar (no se borra, puedes volver a verlo)</button>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<div style="padding:0 15px"><h2>🗺️ Nuestra Cobertura</h2><p style="font-size:13px;color:#666;margin:-5px 0 10px;padding:0 5px">Haz zoom con tus dedos para ver tu calle. ¿Estás dentro del color?</p><div id="mapa" style="height:380px;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.15)"></div>
+<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+<button onclick="mostrarFase('f1')" style="flex:1;background:#16A34A;color:white;border:none;padding:11px;border-radius:20px;font-weight:bold">🟢 Fase 1 - ACTIVA</button>
+<button onclick="mostrarFase('f2')" style="flex:1;background:#2563EB;color:white;border:none;padding:11px;border-radius:20px;font-weight:bold">🔵 Fase 2 - Pronto</button>
+<button onclick="mostrarFase('f3')" style="flex:1;background:#DC2626;color:white;border:none;padding:11px;border-radius:20px;font-weight:bold">🔴 Fase 3 - Pronto</button>
+</div><div id="infoFase" style="background:white;margin-top:10px;padding:13px;border-radius:12px;font-size:14px"><b>🟢 FASE 1 - YA ENTREGAMOS AQUÍ</b><br>El Escape, Emiliano Zapata y Unidad Habitacional Salvador Esquer Apodaca.<br><br>Si estás en lo verde, ¡pide en Fa!</div></div>
+<script>
+var mapa = L.map('mapa').setView([18.966, -96.729], 14);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapa);
+var fase1 = L.polygon([[18.950593,-96.749497],[18.947772,-96.746804],[18.965443,-96.735178],[18.973356,-96.731721],[18.957267,-96.717387],[18.954302,-96.721061],[18.959844,-96.726173],[18.961342,-96.734152]], {color:'#16A34A', fillColor:'#16A34A', fillOpacity:0.45, weight:3}).addTo(mapa);
+var fase2 = L.polygon([[18.979314,-96.734984],[18.985065,-96.724596],[18.975687,-96.718792],[18.967607,-96.727043]], {color:'#2563EB', fillColor:'#2563EB', fillOpacity:0.45, weight:3}).addTo(mapa);
+var fase3 = L.polygon([[18.967607,-96.727043],[18.961232,-96.719762],[18.980086,-96.708789],[18.982640,-96.714951]], {color:'#DC2626', fillColor:'#DC2626', fillOpacity:0.45, weight:3}).addTo(mapa);
+function mostrarFase(cual){ var txt=document.getElementById('infoFase'); if(cual=='f1'){ mapa.setView([18.959,-96.733],14); txt.innerHTML="<b>🟢 FASE 1 - YA ENTREGAMOS AQUÍ</b><br>El Escape, Emiliano Zapata y Unidad Habitacional Salvador Esquer Apodaca.<br><br>Si estás en lo verde, ¡pide en Fa!"; } if(cual=='f2'){ mapa.setView([18.977,-96.726],14); txt.innerHTML="<b>🔵 FASE 2 - PRÓXIMAMENTE</b><br>Centro de Paso del Macho."; } if(cual=='f3'){ mapa.setView([18.972,-96.718],14); txt.innerHTML="<b>🔴 FASE 3 - PRÓXIMAMENTE</b><br>Zona Sur de Paso del Macho."; } }
+</script>
+<h2>⭐ Recomendados hoy</h2><div id="destacados"></div>
+<div class="promo"><h3 style="margin:0">¿Tienes negocio en Paso del Macho?</h3><p style="font-size:13px;opacity:.8">Aparece en la app + video en nuestro TikTok y Facebook</p><button onclick="registrar()">Quiero mi paquete 📲</button></div>
+</div>
+<div id="categoria" style="display:none"><br><button class="back" onclick="volver()">← Volver</button><h2 id="tituloCat"></h2><div id="listaCat"></div></div>
+<footer>EN FA PDM • Paso del Macho, Ver. • WhatsApp 273 124 5452<br>Hecho en Paso del Macho, para Paso del Macho.
+<div class="socials-footer"><a class="s-fb" href="https://www.facebook.com/share/19mCAgozyb/" target="_blank">📘 Facebook</a><a class="s-ig" href="https://www.instagram.com/enfapdm" target="_blank">📸 Instagram</a><a class="s-tt" href="https://www.tiktok.com/@en.fa.pdm?_r=1&_t=ZS-9BXRQdIrKPU" target="_blank">🎵 TikTok</a><a class="s-wa" href="https://wa.me/522731245452" target="_blank">💬 WhatsApp Business</a></div></footer>
+
+<!-- COMANDA -->
+<div id="modalComanda"><div class="cardM">
+<h3 style="margin:0" id="tituloComanda">Comanda</h3><p style="color:#666;font-size:13px;margin:5px 0">Anota la cantidad en el recuadro. Precio $45.00 c/u</p>
+<input type="text" id="cliNombre" placeholder="Tu nombre">
+<input type="text" id="cliDireccion" placeholder="Tu dirección / referencia">
+<input type="tel" id="cliTelefono" placeholder="Tu teléfono / WhatsApp">
+<div id="listaComanda" style="margin-top:10px"></div>
+<div style="background:#FFFBEB;padding:12px;border-radius:12px;margin-top:10px;font-size:14px">
+Subtotal: $<span id="subComanda">0.00</span><br>Comisión de EN FA!: $20.00<br><b>Total a pagar: $<span id="totComanda">20.00</span></b>
+</div>
+<button class="btn btn-naranja" style="width:100%;margin-top:10px" onclick="hacerPedido()">Hacer pedido 🛵</button>
+<button class="btn" style="width:100%;background:#eee;margin-top:8px" onclick="cerrarComanda()">Cerrar</button>
+</div></div>
+
+<!-- EXITO / ESTADO CLIENTE -->
+<div id="modalExito"><div class="cardM" style="text-align:center">
+<h2 id="tituloExito">✅ Pedido realizado</h2><p id="textoExito">Tu pedido ya le llegó al negocio. Te avisamos cuando lo tome.</p>
+<p id="detalleExito" style="font-size:13px;text-align:left;background:#FFF7ED;padding:10px;border-radius:10px"></p>
+<button class="btn btn-negro" style="width:100%" onclick="cerrarExito()">Entendido</button>
+</div></div>
+
+<!-- NEGOCIO -->
+<div id="modalNegocio"><div class="cardM">
+<h3 style="margin:0">🏪 Pedidos para el negocio</h3><p style="font-size:13px;color:#666">Aquí tomas o rechazas. Al cliente le llega el mensaje.</p>
+<div id="listaPedidosNegocio"></div>
+<button class="btn" style="width:100%;background:#eee" onclick="cerrarNegocio()">Cerrar</button>
 </div></div>
 
 <script>
+const TEL="522731245452";
 const firebaseConfig={databaseURL:"https://en-fa-pdm-default-rtdb.firebaseio.com"};
-firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
-let carrito={}; let miPedidoId=localStorage.getItem('ultimoPedido')||"";
-let mapa=null, marcadorRepa=null, marcadorCasa=null;
-const ubicNegocios={"Carnitas Vale":[18.971,-96.710],"Las Galeras":[18.972,-96.711],"Chucumites":[18.970,-96.709],"Antojitos Paraíso":[18.973,-96.712],"El Compayito":[18.9715,-96.7105],"Depósito Altamirano Iram":[18.969,-96.708],"Depósito El Fuerte":[18.974,-96.713],"7/24 y Oxxo":[18.972,-96.709],"Super Sampieri":[18.971,-96.711],"Super Vásquez":[18.970,-96.710],"Lores":[18.972,-96.712],"Aurrerá":[18.968,-96.709],"Refaccionaria del Centro":[18.971,-96.710],"Refaccionaria Osorio":[18.973,-96.711]};
+firebase.initializeApp(firebaseConfig); const db=firebase.database();
+let negocioActual=null; let cantidades={}; let miPedidoId=localStorage.getItem('ultimoPedido')||"";
 
-function renderProductos(){
-  let h="";
-  for(let i=1;i<=5;i++){ h+=`<div class="prod"><span>Producto ${i} - $50</span><span><button onclick="cambiar(${i},-1)">-</button> <b id="c${i}">0</b> <button onclick="cambiar(${i},1)">+</button></span></div>`; }
-  document.getElementById('productos').innerHTML=h;
+const negocios=[
+{id:1,cat:"comida",nombre:"Carnitas Vale",emoji:"🥩",desc:"Carnitas estilo Michoacán, bien doraditas",horario:"8am - 5pm • ⭐ 4.9",fotos:["https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600","https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600","https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600"],menu:[["Taco de carnitas","$30"],["Orden de carnitas 1/2 kg","$180"],["Torta de carnitas","$55"]]},
+{id:2,cat:"comida",nombre:"Las Galeras",emoji:"🦐",desc:"Mariscos y comida del mar",horario:"10am - 7pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1559742811-822873691df8?w=600","https://images.unsplash.com/photo-1611599537845-1c7aca0091c0?w=600","https://images.unsplash.com/photo-1533777857889-4be7c70b33f7?w=600"],menu:[["Coctel de camarón","$120"],["Mojarra frita","$140"],["Ceviche","$110"]]},
+{id:3,cat:"comida",nombre:"Chucumites",emoji:"🌮",desc:"Antojitos y tacos de la región",horario:"5pm - 11pm • ⭐ 4.9",fotos:["https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=600","https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600","https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=600"],menu:[["Tacos de pastor","$25"],["Gringa","$45"],["Quesadilla","$35"]]},
+{id:4,cat:"comida",nombre:"Antojitos Paraíso",emoji:"🍔",desc:"Antojitos, tortas y hamburguesas",horario:"4pm - 11pm • ⭐ 4.7",fotos:["https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600","https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600","https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=600"],menu:[["Hamburguesa clásica","$70"],["Torta de jamón","$50"],["Papas a la francesa","$40"]]},
+{id:5,cat:"licores",nombre:"El Compayito",emoji:"🍺",desc:"Cheve fría, botana y hielo",horario:"10am - 11pm • ❄️ Bien fría",fotos:["https://images.unsplash.com/photo-1600788886242-5c96aabe3757?w=600","https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?w=600","https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=600"],menu:[["Six de cerveza","$120"],["Hielo 5kg","$40"],["Botana","$60"]]},
+{id:6,cat:"licores",nombre:"Depósito Altamirano Iram",emoji:"🍻",desc:"Depósito con entrega en fa",horario:"9am - 11pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1600788886242-5c96aabe3757?w=600","https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600","https://images.unsplash.com/photo-1567696911980-2eed69a46042?w=600"],menu:[["Cartón de cerveza","$380"],["Refresco 3L","$45"],["Caguama","$65"]]},
+{id:7,cat:"licores",nombre:"Depósito El Fuerte",emoji:"🥃",desc:"Licores, cerveza y refrescos",horario:"9am - 10pm • ⭐ 4.9",fotos:["https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=600","https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600","https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600"],menu:[["Botella 750ml","$280"],["Six Tecate","$130"],["Refrescos","$35"]]},
+{id:8,cat:"licores",nombre:"7/24 y Oxxo",emoji:"🏪",desc:"Tienda 24 hrs, todo en fa",horario:"24 hrs • Abierto siempre",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Café + pan","$45"],["Recarga / Oxxo","$20"],["Snacks","$35"]]},
+{id:9,cat:"abarrotes",nombre:"Super Sampieri",emoji:"🛒",desc:"Súper completo, todo para tu casa",horario:"7am - 9pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1542838132-92c53300491e?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Despensa básica","$350"],["Frutas y verduras","$120"],["Lácteos","$90"]]},
+{id:10,cat:"abarrotes",nombre:"Super Vásquez",emoji:"🛍️",desc:"Abarrotes, frutas y carnes",horario:"7am - 9pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1542838132-92c53300491e?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Kilo de huevo","$52"],["Kilo de tortilla","$28"],["Aceite 1L","$48"]]},
+{id:11,cat:"abarrotes",nombre:"Lores",emoji:"🏬",desc:"Todo para tu hogar a buen precio",horario:"8am - 9pm",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600","https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600"],menu:[["Detergente","$85"],["Papel higiénico","$65"],["Jabón","$35"]]},
+{id:12,cat:"abarrotes",nombre:"Aurrerá",emoji:"🛒",desc:"Precios bajos, despensa completa",horario:"7am - 10pm",fotos:["https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600","https://images.unsplash.com/photo-1542838132-92c53300491e?w=600","https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?w=600"],menu:[["Despensa familiar","$500"],["Pollo entero","$120"],["Arroz 1kg","$32"]]},
+{id:13,cat:"refaccionaria",nombre:"Refaccionaria del Centro",emoji:"🔧",desc:"Piezas para moto y carro",horario:"8am - 7pm • ⭐ 4.7",fotos:["https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=600","https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600","https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=600"],menu:[["Balatas moto","$180"],["Aceite 1L","$130"],["Bujía","$65"]]},
+{id:14,cat:"refaccionaria",nombre:"Refaccionaria Osorio",emoji:"🛠️",desc:"Refacciones originales y genéricas",horario:"8am - 7pm • ⭐ 4.8",fotos:["https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600","https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=600","https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=600"],menu:[["Llanta moto","$650"],["Cadena","$320"],["Foco LED","$95"]]},
+];
+function tarjeta(n){
+  let menuHtml=n.menu.map(m=>`<div><span>${m[0]}</span><b>${m[1]}</b></div>`).join("");
+  return `<div class="neg"><div class="galeria">${n.fotos.map(f=>`<img src="${f}">`).join("")}</div><div class="info"><h3>${n.emoji} ${n.nombre}</h3><p class="meta">${n.desc} • ${n.horario}</p><span class="tag">🛵 PEDIDO A EN FA PDM</span><div class="menu"><b>📋 MENÚ / LO QUE VENDE</b>${menuHtml}</div><p style="font-size:13px;margin:5px 0">📞 <b>273 124 5452</b> • Desliza fotos →</p><div class="btns"><button class="btn btn-naranja" onclick="abrirComanda('${n.nombre}')">Ver menú / Pedir 📋</button></div></div></div>`;
 }
-function cambiar(i,d){ carrito[i]=Math.max(0,(carrito[i]||0)+d); document.getElementById('c'+i).innerText=carrito[i]; let sub=0; for(let k in carrito) sub+=carrito[k]*50; document.getElementById('sub').innerText=sub; document.getElementById('tot').innerText=sub+20; }
-renderProductos();
-if(miPedidoId) document.getElementById('verPedidoBtn').style.display='block';
+function renderDestacados(){ document.getElementById('destacados').innerHTML=negocios.slice(0,3).map(tarjeta).join(""); }
+function abrirCat(cat){ let t={comida:"🍔 Restaurantes y Antojitos",licores:"🍺 Licores y Cerveza",abarrotes:"🛒 Abarrotes Varios",refaccionaria:"🔧 Refaccionarias"}; document.getElementById('inicio').style.display="none"; document.getElementById('categoria').style.display="block"; document.getElementById('tituloCat').innerText=t[cat]; document.getElementById('listaCat').innerHTML=negocios.filter(n=>n.cat===cat).map(tarjeta).join(""); window.scrollTo(0,0); }
+function volver(){ document.getElementById('categoria').style.display="none"; document.getElementById('inicio').style.display="block"; }
+function registrar(){ window.open("https://wa.me/"+TEL+"?text="+encodeURIComponent("Hola, quiero mi paquete en EN FA PDM (App + TikTok + Facebook)"),"_blank"); }
+function buscarHome(){ let t=document.getElementById('busqueda').value.toLowerCase(); if(!t){ renderDestacados(); return; } document.getElementById('destacados').innerHTML=negocios.filter(n=>n.nombre.toLowerCase().includes(t)||n.desc.toLowerCase().includes(t)).map(tarjeta).join(""); }
+renderDestacados();
 
-function pedir(){
-  let neg=document.getElementById('negocio').value;
-  let nom=document.getElementById('nombre').value; let dir=document.getElementById('direccion').value;
-  if(!nom||!dir){alert("Pon tu nombre y dirección");return;}
-  let prods=[]; let sub=0; for(let k in carrito){ if(carrito[k]>0){prods.push(`Producto ${k} x${carrito[k]}`); sub+=carrito[k]*50;} }
-  if(prods.length==0){alert("Elige al menos 1 producto");return;}
-  let nuevo=db.ref('pedidos').push();
-  miPedidoId=nuevo.key; localStorage.setItem('ultimoPedido',miPedidoId);
-  nuevo.set({negocio:neg,cliente:nom,direccion:dir,productos:prods.join(", "),subtotal:sub,comision:20,total:sub+20,estado:"nuevo",fecha:Date.now()});
-  document.getElementById('verPedidoBtn').style.display='block';
-  abrirSeguimiento();
+// COMANDA
+function abrirComanda(nombre){
+  negocioActual=nombre; cantidades={};
+  document.getElementById('tituloComanda').innerText="📋 Comanda - "+nombre;
+  let h=""; for(let i=1;i<=13;i++){ h+=`<div class="fila"><span><b>Producto ${i}</b><br><small>$45.00</small></span><input type="number" min="0" value="0" id="cant${i}" oninput="calcularTotal()" placeholder="Cant."></div>`; }
+  document.getElementById('listaComanda').innerHTML=h;
+  document.getElementById('subComanda').innerText="0.00"; document.getElementById('totComanda').innerText="20.00";
+  document.getElementById('modalComanda').style.display='flex';
 }
-function abrirSeguimiento(){ document.getElementById('modal').style.display='flex'; escuchar(); }
-function cerrarModal(){ document.getElementById('modal').style.display='none'; }
-function escuchar(){
+function cerrarComanda(){ document.getElementById('modalComanda').style.display='none'; }
+function calcularTotal(){
+  let sub=0; for(let i=1;i<=13;i++){ let v=parseInt(document.getElementById('cant'+i).value||0); if(v>0) sub+=v*45; }
+  document.getElementById('subComanda').innerText=sub.toFixed(2); document.getElementById('totComanda').innerText=(sub+20).toFixed(2);
+}
+function hacerPedido(){
+  let nom=document.getElementById('cliNombre').value.trim(); let dir=document.getElementById('cliDireccion').value.trim(); let tel=document.getElementById('cliTelefono').value.trim();
+  if(!nom||!dir){ alert("Pon tu nombre y dirección"); return; }
+  let lineas=[]; let sub=0; for(let i=1;i<=13;i++){ let v=parseInt(document.getElementById('cant'+i).value||0); if(v>0){ lineas.push(`Producto ${i} - $45.00 x ${v} = $${(v*45).toFixed(2)}`); sub+=v*45; } }
+  if(lineas.length==0){ alert("Anota al menos 1 cantidad"); return; }
+  let total=sub+20;
+  let detalle=lineas.join("\n");
+  // Guardar en Firebase para que negocio pueda tomar/rechazar y cliente reciba aviso
+  let ref=db.ref('pedidos').push(); miPedidoId=ref.key; localStorage.setItem('ultimoPedido',miPedidoId);
+  ref.set({negocio:negocioActual,cliente:nom,direccion:dir,telefono:tel,productos:lineas.join(", "),detalle:detalle,subtotal:sub,comision:20,total:total,estado:"nuevo",fecha:Date.now()});
+  // Mandar comanda a WhatsApp del negocio en segundo plano, al cliente NO se le muestra WhatsApp
+  let msg=`🛵 NUEVO PEDIDO EN FA PDM\n🏪 Negocio: ${negocioActual}\n👤 Cliente: ${nom}\n📍 Dirección: ${dir}\n📞 Tel: ${tel}\n\n📋 COMANDA:\n${detalle}\n\nSubtotal: $${sub.toFixed(2)}\nComisión de EN FA!: $20.00\nTOTAL: $${total.toFixed(2)}\n\nPor favor toma o rechaza en la app.`;
+  window.open("https://wa.me/"+TEL+"?text="+encodeURIComponent(msg),"_blank");
+  cerrarComanda();
+  document.getElementById('tituloExito').innerText="✅ Pedido realizado";
+  document.getElementById('textoExito').innerText="Tu pedido ya le llegó a "+negocioActual+". Te avisamos cuando lo tome.";
+  document.getElementById('detalleExito').innerHTML=`<b>${negocioActual}</b><br>${lineas.join("<br>")}<br><br>Subtotal: $${sub.toFixed(2)}<br>Comisión de EN FA!: $20.00<br><b>Total: $${total.toFixed(2)}</b><br>📍 ${dir}`;
+  document.getElementById('modalExito').style.display='flex';
+  escucharMiPedido();
+}
+function cerrarExito(){ document.getElementById('modalExito').style.display='none'; }
+function verMiPedido(){ if(!miPedidoId){ alert("Aún no tienes pedido. Haz uno primero."); return; } escucharMiPedido(); }
+function escucharMiPedido(){
   if(!miPedidoId) return;
   db.ref('pedidos/'+miPedidoId).on('value', snap=>{
     let p=snap.val(); if(!p) return;
-    let pasos={nuevo:1,preparando:2,listo:2,voy:3,camino:3,entregado:4,rechazado:1};
-    let num=pasos[p.estado]||1;
-    ["p1","p2","p3","p4"].forEach((id,idx)=>{ document.getElementById(id).classList.toggle('activo', idx < num); });
-    document.getElementById('barraProgreso').style.width=(num*25)+"%";
-    let textos={nuevo:"Esperando que el negocio tome tu pedido...",preparando:"🍳 El negocio está preparando tu pedido",listo:"🍽️ ¡Listo! Esperando repartidor",voy:"🛵 ¡Repartidor en camino! Mira el mapa",camino:"🛵 ¡Repartidor en camino! Mira el mapa",entregado:"✅ ¡Entregado! Gracias por pedir en EN FA",rechazado:"❌ Rechazado: "+(p.motivo||"")};
-    document.getElementById('textoEstado').innerText=textos[p.estado]||p.estado;
-    document.getElementById('tituloModal').innerText="Pedido en "+p.negocio;
-    document.getElementById('detallePedido').innerHTML=`<b>${p.productos}</b><br>📍 ${p.direccion}<br>💰 Total: $${p.total}`;
-    document.getElementById('tiempoLlegada').innerText = (p.estado==="voy"||p.estado==="camino") ? "⏱️ Llega en aprox 10 min" : (p.estado==="preparando" ? "⏱️ Preparando, unos 15 min" : "");
-    let mostrarMapa = (p.estado==="voy"||p.estado==="camino"||p.estado==="listo");
-    document.getElementById('mapa').style.display = mostrarMapa ? 'block' : 'none';
-    if(mostrarMapa) dibujarMapa(p);
+    if(p.estado==="tomado"){
+      document.getElementById('tituloExito').innerText="🍳 "+p.negocio+" tomó tu pedido";
+      document.getElementById('textoExito').innerText=p.negocio+" tomó tu pedido y está en proceso. ¡En Fa va para ti!";
+      document.getElementById('detalleExito').innerHTML=`<b>${p.productos}</b><br>📍 ${p.direccion}<br><b>Total: $${p.total}</b>`;
+      document.getElementById('modalExito').style.display='flex';
+    }
+    if(p.estado==="rechazado"){
+      document.getElementById('tituloExito').innerText="❌ Pedido rechazado";
+      document.getElementById('textoExito').innerText="El negocio no pudo tomar tu pedido. Motivo: "+(p.motivo||"Sin motivo");
+      document.getElementById('detalleExito').innerHTML=`<b>${p.negocio}</b><br>${p.productos}<br>Motivo: ${p.motivo||""}`;
+      document.getElementById('modalExito').style.display='flex';
+    }
   });
 }
-function dibujarMapa(p){
-  let centroNeg = ubicNegocios[p.negocio] || [18.971,-96.710];
-  // Si el repartidor ya manda GPS real, usamos eso. Si no, simulamos el punto moviéndose hacia tu casa.
-  let latRepa = p.repaLat || (centroNeg[0] + 0.002);
-  let lngRepa = p.repaLng || (centroNeg[1] + 0.002);
-  if(!mapa){
-    mapa = L.map('mapa').setView(centroNeg, 15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(mapa);
-    L.marker(centroNeg).addTo(mapa).bindPopup("🏪 "+p.negocio);
-    marcadorCasa = L.marker([centroNeg[0]-0.003, centroNeg[1]-0.003]).addTo(mapa).bindPopup("🏠 Tu casa");
-  }
-  if(!marcadorRepa) marcadorRepa = L.marker([latRepa,lngRepa]).addTo(mapa).bindPopup("🛵 Repartidor");
-  else marcadorRepa.setLatLng([latRepa,lngRepa]);
-  setTimeout(()=>{ if(mapa) mapa.invalidateSize(); },300);
+if(miPedidoId) escucharMiPedido();
+
+// NEGOCIO - TOMAR / RECHAZAR
+function abrirNegocio(){ document.getElementById('modalNegocio').style.display='flex'; cargarPedidosNegocio(); }
+function cerrarNegocio(){ document.getElementById('modalNegocio').style.display='none'; }
+function cargarPedidosNegocio(){
+  db.ref('pedidos').orderByChild('fecha').limitToLast(20).once('value', snap=>{
+    let html=""; let val=snap.val()||{}; let ids=Object.keys(val).reverse();
+    if(ids.length==0) html="<p>No hay pedidos todavía.</p>";
+    ids.forEach(id=>{ let p=val[id];
+      html+=`<div class="pedidoCard"><b>${p.negocio}</b> - ${p.estado}<br>👤 ${p.cliente} - 📍 ${p.direccion}<br><small>${p.productos}</small><br><b>Total: $${p.total} (incluye Comisión EN FA $20)</b><br>`;
+      if(p.estado==="nuevo"){ html+=`<input type="text" id="motivo_${id}" placeholder="Si rechazas, escribe el motivo aquí"><button class="btn btn-verde" onclick="tomarPedido('${id}')">✅ Tomar pedido</button><button class="btn" style="background:#DC2626;color:white;margin-top:6px" onclick="rechazarPedido('${id}')">❌ Rechazar pedido</button>`; }
+      if(p.estado==="rechazado") html+=`<small>Motivo: ${p.motivo||""}</small>`;
+      if(p.estado==="tomado") html+=`<small>✅ Tomado y en proceso</small>`;
+      html+=`</div>`;
+    });
+    document.getElementById('listaPedidosNegocio').innerHTML=html;
+  });
 }
+function tomarPedido(id){ db.ref('pedidos/'+id).update({estado:"tomado"}); alert("Pedido tomado. Al cliente ya le llegó: tu negocio tomó tu pedido y está en proceso."); setTimeout(cargarPedidosNegocio,500); }
+function rechazarPedido(id){ let m=document.getElementById('motivo_'+id).value.trim(); if(!m){ alert("Escribe el motivo del rechazo para que le llegue al cliente"); return; } db.ref('pedidos/'+id).update({estado:"rechazado",motivo:m}); alert("Rechazado. Al cliente le llega tu motivo."); setTimeout(cargarPedidosNegocio,500); }
+</script>
+<script>if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }</script>
+<script>
+let appParaInstalar=null; window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); appParaInstalar=e; });
+document.getElementById('btnInstalar').addEventListener('click', async ()=>{ if(appParaInstalar){ appParaInstalar.prompt(); await appParaInstalar.userChoice; appParaInstalar=null; } else { alert('En tu celular pícale a los 3 puntitos > Instalar app'); } });
 </script>
 </body>
 </html>
