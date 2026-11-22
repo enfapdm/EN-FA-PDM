@@ -22,8 +22,14 @@ button{width:100%;padding:14px;font-size:17px;border:none;border-radius:12px;mar
 .pedido{background:#2a2a2a;padding:15px;border-radius:12px;margin:10px 0;text-align:left;border:2px solid #333}
 .pedido.nuevo{border-color:#25D366;animation:parpadeo 1s infinite}
 .pedido.listo{border-color:#ffcc00;animation:parpadeo 1s infinite}
+.pedido.mio{border-color:#2196F3}
 @keyframes parpadeo{50%{border-color:#ffcc00}}
 input,select{width:100%;padding:14px;font-size:18px;border-radius:10px;border:none;margin-top:10px;text-align:center}
+.tabs{display:flex;gap:8px;margin-top:10px}
+.tabs button{flex:1;padding:12px;font-size:14px;background:#333;color:#fff}
+.tabs button.activo{background:#25D366;color:#fff}
+.resumen{background:#222;border-radius:12px;padding:12px;margin-top:10px;font-size:14px}
+.resumen b{color:#ffcc00}
 </style>
 </head>
 <body>
@@ -52,7 +58,19 @@ input,select{width:100%;padding:14px;font-size:18px;border-radius:10px;border:no
 <h2>Hola Repartidor #<span id="muestraNum"></span> 👋</h2>
 <p id="estadoRepa">Esperando pedidos en vivo...</p>
 <button style="background:#ffcc00;color:#000" onclick="activarSonido()">🔔 ACTIVAR SONIDO DE PEDIDOS - Pícale aquí al entrar</button>
-<div id="listaPedidos"></div>
+
+<div class="resumen">Hoy llevas: <b id="numEntregadosHoy">0</b> entregados | En vivo: <b id="numVivo">0</b> | Libres: <b id="numLibres">0</b></div>
+
+<div class="tabs">
+<button id="tabVivo" class="activo" onclick="mostrarTab('vivo')">🔴 EN VIVO</button>
+<button id="tabLibres" onclick="mostrarTab('libres')">🆓 LIBRES</button>
+<button id="tabEntregados" onclick="mostrarTab('entregados')">✅ ENTREGADOS</button>
+</div>
+
+<div id="vistaVivo"><div id="listaPedidos"></div></div>
+<div id="vistaLibres" style="display:none"><div id="listaLibres"></div></div>
+<div id="vistaEntregados" style="display:none"><div id="listaEntregados"></div></div>
+
 <button class="gris" onclick="location.reload()">🚪 Salir</button>
 </div>
 <script>
@@ -65,11 +83,12 @@ const passwords = {
   "6":"fa6", "7":"fa7", "8":"fa8", "9":"fa9", "10":"fa10"
 };
 let miNum = "";
-let misPedidos = {};
 let gpsActivo = null;
 let sonidoActivo = false;
 let idsYaAvisados = {};
 let audioCtx = null;
+let tabActual = 'vivo';
+let todosPedidos = {};
 
 document.getElementById('conexion').innerText = "✅ Conectado en vivo";
 
@@ -81,13 +100,23 @@ function entrar(){
     document.getElementById('login').style.display='none';
     document.getElementById('panel').style.display='block';
     document.getElementById('muestraNum').innerText = n;
+    if("Notification" in window && Notification.permission==="default") Notification.requestPermission();
     escucharPedidos();
   } else {
     document.getElementById('error').innerText = "❌ Contraseña incorrecta";
   }
 }
 
-// SONIDO - EL CEL TIENE QUE TENER EL SONIDO ACTIVADO Y HABERLE PICADO AL BOTON DE ARRIBA UNA VEZ
+function mostrarTab(t){
+  tabActual = t;
+  document.getElementById('vistaVivo').style.display = t==='vivo' ? 'block' : 'none';
+  document.getElementById('vistaLibres').style.display = t==='libres' ? 'block' : 'none';
+  document.getElementById('vistaEntregados').style.display = t==='entregados' ? 'block' : 'none';
+  document.getElementById('tabVivo').className = t==='vivo' ? 'activo' : '';
+  document.getElementById('tabLibres').className = t==='libres' ? 'activo' : '';
+  document.getElementById('tabEntregados').className = t==='entregados' ? 'activo' : '';
+}
+
 function activarSonido(){
   sonidoActivo = true;
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -97,7 +126,6 @@ function activarSonido(){
 }
 function sonar(){
   if(!sonidoActivo || !audioCtx) return;
-  // Beep fuerte x3
   for(let i=0;i<3;i++){
     setTimeout(()=>{
       let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
@@ -110,50 +138,99 @@ function sonar(){
   if(navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
 }
 
+// ESTA ES LA FUNCIÓN QUE ARREGLA QUE LOS BOTONES NO DESAPAREZCAN
+function htmlPedido(k, ped){
+  let esMio = String(ped.repa) === String(miNum);
+  let esLibre = !ped.repa || ped.repa === "" || ped.repa === null;
+  let clase = "pedido";
+  if(ped.estado==="listo") clase = "pedido listo";
+  if(ped.estado==="nuevo" || ped.estado==="tomado") clase = "pedido nuevo";
+  if(esMio) clase += " mio";
+
+  let botones = "";
+  // CORRECCIÓN 1: Si está libre y está en nuevo / tomado / listo / preparando, SIEMPRE puede picar YO VOY
+  // Antes solo dejaba nuevo y listo, por eso cuando el negocio picaba TOMAR (tomado) se quedaba sin botón
+  if(esLibre && (ped.estado==="nuevo" || ped.estado==="tomado" || ped.estado==="preparando" || ped.estado==="listo")){
+    botones += `<button class="yoVoy" onclick="tomarPedido('${k}')">🙋 YO VOY</button>`;
+  }
+  // CORRECCIÓN 2: Si ya es mío, los botones se mantienen según el estado, no desaparecen
+  if(esMio && ped.estado==="voy"){
+    botones += `<button class="camino" onclick="cambiarEstado('${k}','camino')">🚀 YA VOY EN CAMINO</button>`;
+  }
+  if(esMio && ped.estado==="camino"){
+    botones += `<button class="entregado" onclick="cambiarEstado('${k}','entregado')">✅ ENTREGADO</button>`;
+  }
+  // Si es de otro repartidor, solo lo ves, no lo puedes tocar
+  let dueño = "";
+  if(!esLibre && !esMio) dueño = `<br>🛵 Lo lleva Repartidor #${ped.repa}`;
+  if(esMio) dueño = `<br>✅ ES TUYO`;
+
+  return `<div class="${clase}">
+    <b>🧾 Pedido ${k.slice(-4)}</b><br>
+    🏪 ${ped.negocio || ""}<br>
+    👤 ${ped.cliente || "Cliente"}<br>
+    📍 ${ped.direccion || ""}<br>
+    💰 $${ped.total || 0} - 📦 ${ped.productos || ""}<br>
+    Estado: <b>${ped.estado || "nuevo"}</b>${dueño}<br>
+    ${botones}
+    ${esMio && ped.estado==="entregado" ? `<p style="color:#25D366">✅ Entregado, ya le llegó al cliente</p>` : ""}
+  </div>`;
+}
+
 function escucharPedidos(){
   db.ref('pedidos').on('value', (snap)=>{
     let datos = snap.val() || {};
-    misPedidos = datos;
-    let html = "";
+    todosPedidos = datos;
     let keys = Object.keys(datos).reverse();
-    if(keys.length === 0){
-      html = "<p>Sin pedidos todavía... esperando 🕐</p>";
-    }
-    keys.forEach(k=>{
-      let ped = datos[k];
-      // NO MOSTRAR LOS YA ENTREGADOS DE OTROS, SOLO LOS ACTIVOS Y LOS TUYOS
-      if(ped.estado==="entregado" && ped.repa != miNum) return;
-      let esMio = ped.repa == miNum;
-      let esLibre = !ped.repa || ped.repa == "";
-      let clase = "pedido";
-      if(ped.estado==="listo") clase = "pedido listo";
-      if(ped.estado==="nuevo") clase = "pedido nuevo";
 
-      // AVISO CON SONIDO CUANDO UN PEDIDO SE PONE EN LISTO Y ESTA LIBRE
-      if(ped.estado==="listo" && esLibre && !idsYaAvisados[k]){
+    // 1. EN VIVO = todo menos entregado y rechazado
+    let vivo = keys.filter(k => datos[k].estado!=="entregado" && datos[k].estado!=="rechazado");
+    // 2. LIBRES = sin repartidor y en estado que se puede tomar
+    let libres = vivo.filter(k => {
+      let ped = datos[k];
+      let esLibre = !ped.repa || ped.repa==="" ;
+      return esLibre && (ped.estado==="nuevo" || ped.estado==="tomado" || ped.estado==="preparando" || ped.estado==="listo");
+    });
+    // 3. ENTREGADOS = los entregados de hoy (se quedan aquí, ya no se borran)
+    let entregados = keys.filter(k => datos[k].estado==="entregado");
+
+    document.getElementById('numVivo').innerText = vivo.length;
+    document.getElementById('numLibres').innerText = libres.length;
+    document.getElementById('numEntregadosHoy').innerText = entregados.length;
+
+    // SONIDO solo cuando un pedido LIBRE se pone en LISTO
+    libres.forEach(k=>{
+      let ped = datos[k];
+      if(ped.estado==="listo" && !idsYaAvisados[k]){
         idsYaAvisados[k]=true;
         sonar();
-        if(Notification && Notification.permission==="granted"){
+        if("Notification" in window && Notification.permission==="granted"){
           new Notification("🛵 ¡PEDIDO LISTO EN FA!", {body: (ped.negocio||"")+" - "+(ped.cliente||"")+" - "+(ped.direccion||"")});
         }
       }
-      if(Notification && Notification.permission==="default") Notification.requestPermission();
-
-      html += `<div class="${clase}">
-        <b>🧾 Pedido ${k.slice(-4)}</b><br>
-        🏪 ${ped.negocio || ""}<br>
-        👤 ${ped.cliente || "Cliente"}<br>
-        📍 ${ped.direccion || ""}<br>
-        💰 $${ped.total || 0} - 📦 ${ped.productos || ""}<br>
-        Estado: <b>${ped.estado || "nuevo"}</b> ${esMio ? " - ES TUYO ✅" : ""}<br>
-        ${esLibre && (ped.estado==="listo" || ped.estado==="nuevo") ? `<button class="yoVoy" onclick="tomarPedido('${k}')">🙋 YO VOY</button>` : ""}
-        ${esMio && ped.estado==="voy" ? `<button class="camino" onclick="cambiarEstado('${k}','camino')">🚀 YA VOY EN CAMINO</button>` : ""}
-        ${esMio && ped.estado==="camino" ? `<button class="entregado" onclick="cambiarEstado('${k}','entregado')">✅ ENTREGADO</button>` : ""}
-        ${esMio && ped.estado==="entregado" ? `<p style="color:#25D366">✅ Entregado, ya le llegó al cliente</p>` : ""}
-      </div>`;
     });
-    if(html==="") html="<p>Sin pedidos listos ahorita... esperando 🕐<br><small>Cuando el negocio ponga LISTO, aquí te aparece.</small></p>";
-    document.getElementById('listaPedidos').innerHTML = html;
+
+    // EN VIVO
+    let htmlVivo = "";
+    if(vivo.length===0) htmlVivo = "<p>Sin pedidos en vivo... esperando 🕐</p>";
+    vivo.forEach(k=>{ htmlVivo += htmlPedido(k, datos[k]); });
+    document.getElementById('listaPedidos').innerHTML = htmlVivo;
+
+    // LIBRES
+    let htmlLibres = "";
+    if(libres.length===0) htmlLibres = "<p>✅ No hay pedidos libres ahorita.<br><small>Cuando el negocio ponga LISTO, aquí te aparece para que piques YO VOY.</small></p>";
+    libres.forEach(k=>{ htmlLibres += htmlPedido(k, datos[k]); });
+    document.getElementById('listaLibres').innerHTML = htmlLibres;
+
+    // ENTREGADOS
+    let htmlEnt = "";
+    if(entregados.length===0) htmlEnt = "<p>Todavía no entregas hoy.</p>";
+    entregados.forEach(k=>{
+      let ped = datos[k];
+      htmlEnt += `<div class="pedido"><b>🧾 Pedido ${k.slice(-4)}</b> ✅ ENTREGADO<br>🏪 ${ped.negocio||""}<br>👤 ${ped.cliente||""}<br>📍 ${ped.direccion||""}<br>💰 $${ped.total||0}<br>🛵 Repartidor #${ped.repa||""}</div>`;
+    });
+    document.getElementById('listaEntregados').innerHTML = htmlEnt;
+
     if(keys.length>0) document.getElementById('estadoRepa').innerText = "Tienes pedidos en vivo 🔴";
   });
 }
@@ -169,8 +246,8 @@ function cambiarEstado(id, nuevo){
   }
   if(nuevo==="entregado"){
     detenerGPS();
-    // YA NO LO BORRAMOS A LOS 5 SEGUNDOS, PARA QUE EL CLIENTE SI VEA EL "ENTREGADO"
-    // Se queda guardado, el cliente lo ve y el negocio también
+    // YA NO LO BORRAMOS. Se queda en ENTREGADOS para que lo veas.
+    // El negocio lo archiva en su historial, pero aquí se queda visible.
   }
 }
 function iniciarGPS(idPedido){
