@@ -110,7 +110,7 @@ Subtotal: $<span id="subComanda">0.00</span><br>Comisión de EN FA!: $20.00<br><
 
 <!-- NEGOCIO -->
 <div id="modalNegocio"><div class="cardM">
-<h3 style="margin:0">🏪 Pedidos para el negocio</h3><p style="font-size:13px;color:#666">Aquí tomas o rechazas. Al cliente le llega el mensaje.</p>
+<h3 style="margin:0" id="tituloNegocio">🏪 Pedidos para el negocio</h3><p style="font-size:13px;color:#666">Aquí tomas o rechazas. Al cliente le llega el mensaje.</p>
 <div id="listaPedidosNegocio"></div>
 <button class="btn" style="width:100%;background:#eee" onclick="cerrarNegocio()">Cerrar</button>
 </div></div>
@@ -120,6 +120,25 @@ const TEL="522731245452";
 const firebaseConfig={databaseURL:"https://en-fa-pdm-default-rtdb.firebaseio.com"};
 firebase.initializeApp(firebaseConfig); const db=firebase.database();
 let negocioActual=null; let cantidades={}; let miPedidoId=localStorage.getItem('ultimoPedido')||"";
+let negocioLogueado="";
+
+// CONTRASEÑAS DE NEGOCIOS - SOLO EL DUEÑO LA SABE, CAMBIALAS CUANDO QUIERAS
+const CLAVES={
+  "Carnitas Vale":"vale123",
+  "Las Galeras":"galeras123",
+  "Chucumites":"chucu123",
+  "Antojitos Paraíso":"paraiso123",
+  "El Compayito":"compa123",
+  "Depósito Altamirano Iram":"altamirano123",
+  "Depósito El Fuerte":"fuerte123",
+  "7/24 y Oxxo":"oxxo123",
+  "Super Sampieri":"sampieri123",
+  "Super Vásquez":"vasquez123",
+  "Lores":"lores123",
+  "Aurrerá":"aurrera123",
+  "Refaccionaria del Centro":"centro123",
+  "Refaccionaria Osorio":"osorio123"
+};
 
 const negocios=[
 {id:1,cat:"comida",nombre:"Carnitas Vale",emoji:"🥩",desc:"Carnitas estilo Michoacán, bien doraditas",horario:"8am - 5pm • ⭐ 4.9",fotos:["https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600","https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600","https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600"],menu:[["Taco de carnitas","$30"],["Orden de carnitas 1/2 kg","$180"],["Torta de carnitas","$55"]]},
@@ -169,10 +188,8 @@ function hacerPedido(){
   if(lineas.length==0){ alert("Anota al menos 1 cantidad"); return; }
   let total=sub+20;
   let detalle=lineas.join("\n");
-  // Guardar en Firebase para que negocio pueda tomar/rechazar y cliente reciba aviso
   let ref=db.ref('pedidos').push(); miPedidoId=ref.key; localStorage.setItem('ultimoPedido',miPedidoId);
   ref.set({negocio:negocioActual,cliente:nom,direccion:dir,telefono:tel,productos:lineas.join(", "),detalle:detalle,subtotal:sub,comision:20,total:total,estado:"nuevo",fecha:Date.now()});
-  // Mandar comanda a WhatsApp del negocio en segundo plano, al cliente NO se le muestra WhatsApp
   let msg=`🛵 NUEVO PEDIDO EN FA PDM\n🏪 Negocio: ${negocioActual}\n👤 Cliente: ${nom}\n📍 Dirección: ${dir}\n📞 Tel: ${tel}\n\n📋 COMANDA:\n${detalle}\n\nSubtotal: $${sub.toFixed(2)}\nComisión de EN FA!: $20.00\nTOTAL: $${total.toFixed(2)}\n\nPor favor toma o rechaza en la app.`;
   window.open("https://wa.me/"+TEL+"?text="+encodeURIComponent(msg),"_blank");
   cerrarComanda();
@@ -183,7 +200,16 @@ function hacerPedido(){
   escucharMiPedido();
 }
 function cerrarExito(){ document.getElementById('modalExito').style.display='none'; }
-function verMiPedido(){ if(!miPedidoId){ alert("Aún no tienes pedido. Haz uno primero."); return; } escucharMiPedido(); }
+function verMiPedido(){
+  if(!miPedidoId){
+    document.getElementById('tituloExito').innerText="🧾 Aún no tienes pedido";
+    document.getElementById('textoExito').innerText="Haz tu primer pedido: pica Ver menú / Pedir, anota tu cantidad y dale Hacer pedido.";
+    document.getElementById('detalleExito').innerHTML="";
+    document.getElementById('modalExito').style.display='flex';
+    return;
+  }
+  escucharMiPedido();
+}
 function escucharMiPedido(){
   if(!miPedidoId) return;
   db.ref('pedidos/'+miPedidoId).on('value', snap=>{
@@ -204,13 +230,24 @@ function escucharMiPedido(){
 }
 if(miPedidoId) escucharMiPedido();
 
-// NEGOCIO - TOMAR / RECHAZAR
-function abrirNegocio(){ document.getElementById('modalNegocio').style.display='flex'; cargarPedidosNegocio(); }
+// NEGOCIO - CON CONTRASEÑA, SOLO VE SUS PEDIDOS
+function abrirNegocio(){
+  let neg = prompt("¿Qué negocio eres?\nEscribe tal cual, ejemplo: Carnitas Vale");
+  if(!neg) return;
+  let encontrado = Object.keys(CLAVES).find(n => n.toLowerCase() === neg.toLowerCase().trim());
+  if(!encontrado){ alert("Ese negocio no existe. Escríbelo tal cual aparece en la app."); return; }
+  let clave = prompt("Contraseña de " + encontrado + ":");
+  if(clave !== CLAVES[encontrado]){ alert("❌ Contraseña incorrecta. Solo el dueño de " + encontrado + " puede entrar."); return; }
+  negocioLogueado = encontrado;
+  document.getElementById('tituloNegocio').innerText = "🏪 Pedidos de " + negocioLogueado;
+  document.getElementById('modalNegocio').style.display='flex';
+  cargarPedidosNegocio();
+}
 function cerrarNegocio(){ document.getElementById('modalNegocio').style.display='none'; }
 function cargarPedidosNegocio(){
   db.ref('pedidos').orderByChild('fecha').limitToLast(20).once('value', snap=>{
-    let html=""; let val=snap.val()||{}; let ids=Object.keys(val).reverse();
-    if(ids.length==0) html="<p>No hay pedidos todavía.</p>";
+    let html=""; let val=snap.val()||{}; let ids=Object.keys(val).reverse().filter(id => val[id].negocio === negocioLogueado);
+    if(ids.length==0) html="<p>✅ Todo bien "+negocioLogueado+", no tienes pedidos todavía.<br><br>Cuando un cliente te pida, aquí te aparece para tomarlo o rechazarlo.</p>";
     ids.forEach(id=>{ let p=val[id];
       html+=`<div class="pedidoCard"><b>${p.negocio}</b> - ${p.estado}<br>👤 ${p.cliente} - 📍 ${p.direccion}<br><small>${p.productos}</small><br><b>Total: $${p.total} (incluye Comisión EN FA $20)</b><br>`;
       if(p.estado==="nuevo"){ html+=`<input type="text" id="motivo_${id}" placeholder="Si rechazas, escribe el motivo aquí"><button class="btn btn-verde" onclick="tomarPedido('${id}')">✅ Tomar pedido</button><button class="btn" style="background:#DC2626;color:white;margin-top:6px" onclick="rechazarPedido('${id}')">❌ Rechazar pedido</button>`; }
@@ -227,7 +264,7 @@ function rechazarPedido(id){ let m=document.getElementById('motivo_'+id).value.t
 <script>if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }</script>
 <script>
 let appParaInstalar=null; window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); appParaInstalar=e; });
-document.getElementById('btnInstalar').addEventListener('click', async ()=>{ if(appParaInstalar){ appParaInstalar.prompt(); await appParaInstalar.userChoice; appParaInstalar=null; } else { alert('En tu celular pícale a los 3 puntitos > Instalar app'); } });
+document.getElementById('btnInstalar').addEventListener('click', async ()=>{ if(appParaInstalar){ appParaInstalar.prompt(); await appParaInstalar.userChoice; appParaInstalar=null; } else { alert('Listo! Pícale arriba a los 3 puntitos > Instalar app > Instalar. Así te queda como app en tu celular.'); } });
 </script>
 </body>
 </html>
