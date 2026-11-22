@@ -31,11 +31,14 @@ h2{padding:0 15px;font-size:18px;margin:15px 0 10px}
 .promo{background:#111;color:white;margin:15px;padding:18px;border-radius:16px;text-align:center}
 .promo button{background:#EA580C;color:white;border:none;padding:12px 20px;border-radius:20px;font-weight:bold;margin-top:8px}
 footer{text-align:center;color:#999;font-size:12px;padding:20px}
+/* REDES CON LOGOS REALES */
 .socials{display:flex;gap:8px;padding:12px 15px 0;justify-content:center;flex-wrap:wrap}
-.socials a{flex:1;min-width:70px;text-align:center;text-decoration:none;color:white;padding:11px 5px;border-radius:25px;font-weight:bold;font-size:13px}
-.s-fb{background:#1877F2} .s-ig{background:#E1306C} .s-tt{background:#111} .s-wa{background:#16A34A}
+.socials a{flex:1;min-width:70px;text-align:center;text-decoration:none;color:white;padding:11px 5px;border-radius:25px;font-weight:bold;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px}
+.socials a svg{width:18px;height:18px;fill:white;flex-shrink:0}
+.s-fb{background:#1877F2} .s-ig{background:linear-gradient(45deg,#F58529,#DD2A7B,#8134AF,#515BD4)} .s-tt{background:#111} .s-wa{background:#16A34A}
 .socials-footer{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
-.socials-footer a{text-decoration:none;color:white;padding:10px 14px;border-radius:20px;font-weight:bold;font-size:13px}
+.socials-footer a{text-decoration:none;color:white;padding:10px 14px;border-radius:20px;font-weight:bold;font-size:13px;display:flex;align-items:center;gap:6px}
+.socials-footer a svg{width:18px;height:18px;fill:white}
 #modalComanda,#modalExito{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:15px;z-index:999;overflow:auto}
 .cardM{background:white;border-radius:16px;padding:16px;width:100%;max-width:460px;margin:20px 0}
 .fila{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed #ddd;font-size:14px}
@@ -45,18 +48,25 @@ input[type=text],input[type=tel]{width:100%;padding:13px;border:1px solid #ddd;b
 .paso{flex:1;opacity:.35} .paso.activo{opacity:1;font-weight:bold;color:#EA580C}
 .barra{height:8px;background:#eee;border-radius:10px;overflow:hidden} #barraProgreso{height:100%;width:10%;background:#EA580C;transition:.5s}
 #mapaSeguimiento{height:260px;border-radius:14px;margin-top:10px;display:none}
+.cobertura-box{background:white;border:2px solid #EA580C;border-radius:14px;padding:12px;margin-top:10px;font-size:14px;text-align:center}
+.cobertura-box b{color:#EA580C}
 </style>
 </head>
 <body>
 <header><h1>🛵 EN FA PDM</h1><p>Todo Paso del Macho, a tu puerta. En Fa.</p></header>
+
+<!-- REDES CON LOGOS REALES -->
 <div class="socials">
-  <a class="s-fb" href="https://www.facebook.com/share/19mCAgozyb/" target="_blank">📘 Facebook</a>
-  <a class="s-ig" href="https://www.instagram.com/enfapdm" target="_blank">📸 Instagram</a>
-  <a class="s-tt" href="https://www.tiktok.com/@en.fa.pdm?_r=1&_t=ZS-9BXRQdIrKPU" target="_blank">🎵 TikTok</a>
-  <a class="s-wa" href="https://wa.me/522731245452?text=Hola%20EN%20FA%20PDM%2C%20quiero%20pedir" target="_blank">💬 WhatsApp</a>
+  <a class="s-fb" href="https://www.facebook.com/share/19mCAgozyb/" target="_blank"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</a>
+  <a class="s-ig" href="https://www.instagram.com/enfapdm" target="_blank"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> Instagram</a>
+  <a class="s-tt" href="https://www.tiktok.com/@en.fa.pdm?_r=1&_t=ZS-9BXRQdIrKPU" target="_blank"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg> TikTok</a>
+  <a class="s-wa" href="https://wa.me/522731245452?text=Hola%20EN%20FA%20PDM%2C%20quiero%20pedir" target="_blank"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg> WhatsApp</a>
 </div>
+
 <button id="btnInstalar" style="background:#EA580C;color:white;border:none;padding:15px 25px;font-size:18px;font-weight:bold;border-radius:12px;width:90%;margin:15px 5%;display:block;">⬇️ Descargar App</button>
-<div style="display:flex;gap:8px;padding:0 15px"><button onclick="window.location.href='negocio/'" style="flex:1;background:#111;color:white;border:none;padding:12px;border-radius:20px;font-weight:bold">🏪 Soy Negocio - Entrar</button><button onclick="verMiPedido()" style="flex:1;background:#16A34A;color:white;border:none;padding:12px;border-radius:20px;font-weight:bold">🧾 Ver mi pedido</button></div>
+
+<!-- YA NO HAY BOTÓN DE SOY NEGOCIO - SOLO VER MI PEDIDO -->
+<div style="display:flex;gap:8px;padding:0 15px"><button onclick="verMiPedido()" style="flex:1;background:#16A34A;color:white;border:none;padding:14px;border-radius:20px;font-weight:bold;font-size:16px">🧾 Ver mi pedido</button></div>
 
 <div id="inicio">
 <div class="search"><input id="busqueda" onkeyup="buscarHome()" placeholder="🔍 ¿Qué quieres hoy? tacos, cheve, refacciones..."></div>
@@ -69,26 +79,34 @@ input[type=text],input[type=tel]{width:100%;padding:13px;border:1px solid #ddd;b
 </div>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<div style="padding:0 15px"><h2>🗺️ Nuestra Cobertura</h2><p style="font-size:13px;color:#666;margin:-5px 0 10px;padding:0 5px">Haz zoom con tus dedos para ver tu calle. ¿Estás dentro del color?</p><div id="mapa" style="height:380px;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.15)"></div>
-<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-<button onclick="mostrarFase('f1')" style="flex:1;background:#16A34A;color:white;border:none;padding:11px;border-radius:20px;font-weight:bold">🟢 Fase 1 - ACTIVA</button>
-<button onclick="mostrarFase('f2')" style="flex:1;background:#2563EB;color:white;border:none;padding:11px;border-radius:20px;font-weight:bold">🔵 Fase 2 - Pronto</button>
-<button onclick="mostrarFase('f3')" style="flex:1;background:#DC2626;color:white;border:none;padding:11px;border-radius:20px;font-weight:bold">🔴 Fase 3 - Pronto</button>
-</div><div id="infoFase" style="background:white;margin-top:10px;padding:13px;border-radius:12px;font-size:14px"><b>🟢 FASE 1 - YA ENTREGAMOS AQUÍ</b><br>El Escape, Emiliano Zapata y Unidad Habitacional Salvador Esquer Apodaca.<br><br>Si estás en lo verde, ¡pide en Fa!</div></div>
+
+<!-- COBERTURA COMPLETA - TODO PASO DEL MACHO CP 94970 - SIN FASES -->
+<div style="padding:0 15px"><h2>🗺️ Nuestra Cobertura</h2><p style="font-size:13px;color:#666;margin:-5px 0 10px;padding:0 5px">Todo Paso del Macho, Ver. CP 94970. Haz zoom con tus dedos para ver tu calle. Si estás dentro del contorno naranja, ¡te llevamos en Fa!</p><div id="mapa" style="height:380px;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.15)"></div>
+<div class="cobertura-box">🧡 <b>COBERTURA COMPLETA - PASO DEL MACHO CP 94970</b><br>Centro, El Escape, Emiliano Zapata, Unidad Habitacional Salvador Esquer Apodaca, Zona Sur y todo Paso del Macho.<br><br>Si estás dentro del contorno, <b>¡pide en Fa!</b></div></div>
 <script>
-var mapa = L.map('mapa').setView([18.966, -96.729], 14);
+var mapa = L.map('mapa').setView([18.965, -96.725], 13.5);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapa);
-var fase1 = L.polygon([[18.950593,-96.749497],[18.947772,-96.746804],[18.965443,-96.735178],[18.973356,-96.731721],[18.957267,-96.717387],[18.954302,-96.721061],[18.959844,-96.726173],[18.961342,-96.734152]], {color:'#16A34A', fillColor:'#16A34A', fillOpacity:0.45, weight:3}).addTo(mapa);
-var fase2 = L.polygon([[18.979314,-96.734984],[18.985065,-96.724596],[18.975687,-96.718792],[18.967607,-96.727043]], {color:'#2563EB', fillColor:'#2563EB', fillOpacity:0.45, weight:3}).addTo(mapa);
-var fase3 = L.polygon([[18.967607,-96.727043],[18.961232,-96.719762],[18.980086,-96.708789],[18.982640,-96.714951]], {color:'#DC2626', fillColor:'#DC2626', fillOpacity:0.45, weight:3}).addTo(mapa);
-function mostrarFase(cual){ var txt=document.getElementById('infoFase'); if(cual=='f1'){ mapa.setView([18.959,-96.733],14); txt.innerHTML="<b>🟢 FASE 1 - YA ENTREGAMOS AQUÍ</b><br>El Escape, Emiliano Zapata y Unidad Habitacional Salvador Esquer Apodaca.<br><br>Si estás en lo verde, ¡pide en Fa!"; } if(cual=='f2'){ mapa.setView([18.977,-96.726],14); txt.innerHTML="<b>🔵 FASE 2 - PRÓXIMAMENTE</b><br>Centro de Paso del Macho."; } if(cual=='f3'){ mapa.setView([18.972,-96.718],14); txt.innerHTML="<b>🔴 FASE 3 - PRÓXIMAMENTE</b><br>Zona Sur de Paso del Macho."; } }
+// CONTORNO COMPLETO DE PASO DEL MACHO - CP 94970
+var coberturaTotal = L.polygon([
+[18.987, -96.745],[18.990, -96.730],[18.987, -96.715],[18.982, -96.705],[18.975, -96.698],
+[18.965, -96.695],[18.955, -96.700],[18.948, -96.710],[18.944, -96.722],[18.945, -96.735],
+[18.950, -96.748],[18.960, -96.755],[18.972, -96.756],[18.982, -96.752]
+], {color:'#EA580C', fillColor:'#EA580C', fillOpacity:0.35, weight:4}).addTo(mapa);
+L.marker([18.971, -96.715]).addTo(mapa).bindPopup("<b>📍 Paso del Macho, Ver.</b><br>CP 94970<br>EN FA PDM entrega en todo el pueblo");
+mapa.fitBounds(coberturaTotal.getBounds());
 </script>
-<h2>⭐ Recomendados hoy</h2><div id="destacados"></div>
+
+<h2>⭐ Negocios más recomendados</h2><div id="destacados"></div>
 <div class="promo"><h3 style="margin:0">¿Tienes negocio en Paso del Macho?</h3><p style="font-size:13px;opacity:.8">Aparece en la app + video en nuestro TikTok y Facebook</p><button onclick="registrar()">Quiero mi paquete 📲</button></div>
 </div>
 <div id="categoria" style="display:none"><br><button class="back" onclick="volver()">← Volver</button><h2 id="tituloCat"></h2><div id="listaCat"></div></div>
-<footer>EN FA PDM • Paso del Macho, Ver. • WhatsApp 273 124 5452<br>Hecho en Paso del Macho, para Paso del Macho.
-<div class="socials-footer"><a class="s-fb" href="https://www.facebook.com/share/19mCAgozyb/" target="_blank">📘 Facebook</a><a class="s-ig" href="https://www.instagram.com/enfapdm" target="_blank">📸 Instagram</a><a class="s-tt" href="https://www.tiktok.com/@en.fa.pdm?_r=1&_t=ZS-9BXRQdIrKPU" target="_blank">🎵 TikTok</a><a class="s-wa" href="https://wa.me/522731245452" target="_blank">💬 WhatsApp Business</a></div></footer>
+<footer>EN FA PDM • Paso del Macho, Ver. CP 94970 • WhatsApp 273 124 5452<br>Hecho en Paso del Macho, para Paso del Macho.
+<div class="socials-footer">
+<a class="s-fb" href="https://www.facebook.com/share/19mCAgozyb/" target="_blank"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</a>
+<a class="s-ig" href="https://www.instagram.com/enfapdm" target="_blank"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg> Instagram</a>
+<a class="s-tt" href="https://www.tiktok.com/@en.fa.pdm?_r=1&_t=ZS-9BXRQdIrKPU" target="_blank"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg> TikTok</a>
+<a class="s-wa" href="https://wa.me/522731245452" target="_blank"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg> WhatsApp</a>
+</div></footer>
 
 <!-- COMANDA -->
 <div id="modalComanda"><div class="cardM">
@@ -104,7 +122,7 @@ Subtotal: $<span id="subComanda">0.00</span><br>Comisión de EN FA!: $20.00<br><
 <button class="btn" style="width:100%;background:#eee;margin-top:8px" onclick="cerrarComanda()">Cerrar</button>
 </div></div>
 
-<!-- SEGUIMIENTO CLIENTE - TIPO MERCADO LIBRE, SE PUEDE VOLVER A VER -->
+<!-- SEGUIMIENTO CLIENTE -->
 <div id="modalExito"><div class="cardM" style="text-align:center">
 <h2 id="tituloExito">✅ Pedido realizado</h2><p id="textoExito">Tu pedido ya le llegó al negocio. Te avisamos cuando lo tome.</p>
 <div class="progreso"><div class="paso activo" id="p1">🧾<br>Pedido</div><div class="paso" id="p2">🍳<br>Preparando</div><div class="paso" id="p3">🛵<br>En camino</div><div class="paso" id="p4">✅<br>Entregado</div></div>
@@ -171,7 +189,6 @@ function hacerPedido(){
   let total=sub+20;
   let detalle=lineas.join("\n");
   let ref=db.ref('pedidos').push(); miPedidoId=ref.key; localStorage.setItem('ultimoPedido',miPedidoId);
-  // YA NO ABRE WHATSAPP - SOLO GUARDA EN FIREBASE PARA NEGOCIO Y REPARTIDOR
   ref.set({negocio:negocioActual,cliente:nom,direccion:dir,telefono:tel,productos:lineas.join(", "),detalle:detalle,subtotal:sub,comision:20,total:total,estado:"nuevo",fecha:Date.now()});
   cerrarComanda();
   escucharMiPedido();
