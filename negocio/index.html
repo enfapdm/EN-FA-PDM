@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EN FA PDM - Negocio</title>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+*{box-sizing:border-box} body{font-family:Arial,sans-serif;background:#FFF7ED;margin:0;padding:15px}
+header{background:#EA580C;color:white;padding:18px;text-align:center;border-radius:16px}
+header h1{margin:0;font-size:24px} header p{margin:5px 0 0;font-size:13px}
+.card{background:white;border-radius:16px;padding:16px;margin-top:15px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+input,select,textarea{width:100%;padding:13px;border:1px solid #ddd;border-radius:12px;margin-top:8px;font-size:15px}
+button{border:none;padding:14px;border-radius:25px;font-weight:bold;font-size:15px;cursor:pointer;width:100%;margin-top:8px}
+.btn-naranja{background:#EA580C;color:white}
+.btn-verde{background:#16A34A;color:white}
+.btn-rojo{background:#DC2626;color:white}
+.btn-gris{background:#eee}
+.btn-azul{background:#2563EB;color:white}
+.pedido{border:2px solid #F97316;background:#FFFBEB;border-radius:16px;padding:14px;margin-top:12px}
+.pedido.listo{border-color:#16A34A;background:#F0FDF4}
+.pedido b{font-size:17px}
+.motivo{margin-top:8px;display:none}
+small{color:#666}
+#panel{display:none}
+</style>
+</head>
+<body>
+<header><h1>🏪 EN FA PDM - NEGOCIO</h1><p>Tu negocio, tus pedidos en vivo.</p></header>
+
+<div id="login" class="card">
+<h3 style="margin:0">Entra a tu negocio</h3>
+<p style="color:#666;font-size:13px;margin:5px 0 0">Elige tu negocio y pon tu contraseña.</p>
+<select id="negocioSelect">
+<option value="Carnitas Vale">Carnitas Vale</option>
+<option value="Las Galeras">Las Galeras</option>
+<option value="Chucumites">Chucumites</option>
+<option value="Antojitos Paraíso">Antojitos Paraíso</option>
+<option value="El Compayito">El Compayito</option>
+<option value="Depósito Altamirano Iram">Depósito Altamirano Iram</option>
+<option value="Depósito El Fuerte">Depósito El Fuerte</option>
+<option value="7/24 y Oxxo">7/24 y Oxxo</option>
+<option value="Super Sampieri">Super Sampieri</option>
+<option value="Super Vásquez">Super Vásquez</option>
+<option value="Lores">Lores</option>
+<option value="Aurrerá">Aurrerá</option>
+<option value="Refaccionaria del Centro">Refaccionaria del Centro</option>
+<option value="Refaccionaria Osorio">Refaccionaria Osorio</option>
+</select>
+<input id="pass" type="password" placeholder="Contraseña">
+<button class="btn-naranja" onclick="entrar()">Entrar ➡️</button>
+<p id="error" style="color:red;text-align:center"></p>
+<p style="font-size:12px;color:#999;text-align:center">Prueba: Carnitas Vale / neg1<br>Las Galeras / neg2, Chucumites / neg3...</p>
+</div>
+
+<div id="panel">
+<div class="card">
+<b>Estás en: <span id="muestraNegocio"></span></b><br>
+<small id="conexion">Conectando...</small><br>
+<small id="estadoNegocio">🔴 Esperando pedidos...</small>
+</div>
+<div id="listaPedidos"></div>
+<button class="btn-gris" onclick="location.reload()">🔄 Recargar</button>
+</div>
+
+<script>
+const firebaseConfig = { databaseURL: "https://en-fa-pdm-default-rtdb.firebaseio.com" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const passwords = {
+"Carnitas Vale":"neg1","Las Galeras":"neg2","Chucumites":"neg3","Antojitos Paraíso":"neg4",
+"El Compayito":"neg5","Depósito Altamirano Iram":"neg6","Depósito El Fuerte":"neg7","7/24 y Oxxo":"neg8",
+"Super Sampieri":"neg9","Super Vásquez":"neg10","Lores":"neg11","Aurrerá":"neg12",
+"Refaccionaria del Centro":"neg13","Refaccionaria Osorio":"neg14"
+};
+let miNegocio = "";
+let misPedidos = {};
+
+document.getElementById('conexion').innerText = "✅ Conectado en vivo";
+
+function entrar(){
+  let n = document.getElementById('negocioSelect').value;
+  let p = document.getElementById('pass').value;
+  if(p === passwords[n]){
+    miNegocio = n;
+    document.getElementById('login').style.display='none';
+    document.getElementById('panel').style.display='block';
+    document.getElementById('muestraNegocio').innerText = n;
+    escucharPedidos();
+  } else {
+    document.getElementById('error').innerText = "❌ Contraseña incorrecta";
+  }
+}
+
+function escucharPedidos(){
+  db.ref('pedidos').on('value', (snap)=>{
+    let datos = snap.val() || {};
+    misPedidos = datos;
+    let html = "";
+    let keys = Object.keys(datos).reverse();
+    let mios = keys.filter(k => datos[k].negocio === miNegocio);
+    if(mios.length === 0){
+      html = "<p style='text-align:center'>Sin pedidos todavía... esperando 🕐</p>";
+    }
+    mios.forEach(k=>{
+      let ped = datos[k];
+      let clase = ped.estado === "listo" ? "pedido listo" : "pedido";
+      html += `<div class="${clase}">
+        <b>🧾 Pedido ${k.slice(-4)}</b> - ${ped.estado || "nuevo"}<br>
+        👤 ${ped.cliente || ""}<br>
+        📍 ${ped.direccion || ""}<br>
+        📦 ${ped.productos || ""}<br>
+        💰 Subtotal: $${ped.subtotal || 0} | Comisión EN FA: $${ped.comision || 20} | <b>TOTAL: $${ped.total || 0}</b><br>
+        ${ped.estado==="rechazado" ? `<br>❌ Rechazado: ${ped.motivo}` : ""}
+        ${ped.estado==="nuevo" ? `
+          <button class="btn-verde" onclick="tomarPedido('${k}')">✅ TOMAR PEDIDO</button>
+          <button class="btn-rojo" onclick="mostrarRechazo('${k}')">❌ RECHAZAR</button>
+          <div id="rechazo-${k}" class="motivo"><textarea id="motivo-${k}" placeholder="Ej: Ya no tenemos Producto 2..."></textarea><button class="btn-rojo" onclick="rechazarPedido('${k}')">Enviar motivo y rechazar</button></div>
+        ` : ""}
+        ${ped.estado==="preparando" ? `<button class="btn-azul" onclick="cambiarEstado('${k}','listo')">🍽️ YA ESTÁ LISTO PARA RECOGER</button>` : ""}
+        ${ped.estado==="listo" ? `<p>✅ Ya avisaste que está listo. Esperando repartidor...</p>` : ""}
+        ${ped.estado==="voy" || ped.estado==="camino" ? `<p>🛵 Repartidor en camino</p>` : ""}
+        ${ped.estado==="entregado" ? `<p>✅ Entregado</p>` : ""}
+      </div>`;
+    });
+    document.getElementById('listaPedidos').innerHTML = html;
+    if(mios.length>0) document.getElementById('estadoNegocio').innerText = "Tienes pedidos en vivo 🔴";
+  });
+}
+
+function tomarPedido(id){
+  db.ref('pedidos/'+id).update({estado: "preparando"});
+}
+function mostrarRechazo(id){
+  document.getElementById('rechazo-'+id).style.display='block';
+}
+function rechazarPedido(id){
+  let motivo = document.getElementById('motivo-'+id).value || "Sin motivo";
+  db.ref('pedidos/'+id).update({estado: "rechazado", motivo: motivo});
+}
+function cambiarEstado(id, nuevo){
+  db.ref('pedidos/'+id).update({estado: nuevo});
+}
+</script>
+</body>
+</html>
